@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>scheme的宏 | Xudifsd</title>
+    <meta name="description" content="Paul的书把lisp的宏夸到了无以附加的地步，但是作为一本闲聊的书它并没有深入介绍lisp的宏，甚至连基本概念都没提到。这对于学习lisp的人非常有害——它会造成一种莫名的崇拜，并且这种崇拜还是对于未知的崇拜，读者根本没有理解任何东西。这样的崇拜让我在读第一本lisp书时就找宏看，结果在没有理解其他部分时就接触...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2011/12/scheme%e7%9a%84%e5%ae%8f/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>scheme的宏</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2011-12-05
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>Paul的<a href="http://book.douban.com/subject/6021440/">书</a>把lisp的宏夸到了无以附加的地步，但是作为一本闲聊的书它并没有深入介绍lisp的宏，甚至连基本概念都没提到。这对于学习lisp的人非常有害——它会造成一种莫名的崇拜，并且这种崇拜还是对于未知的崇拜，读者根本没有理解任何东西。这样的崇拜让我在读第一本lisp书时就找宏看，结果在没有理解其他部分时就接触到宏，当时就看得一头雾水。而且一些强大的东西往往也会有很麻烦的副作用，宏也一样，但是Paul并没有把这些问题讲明白，其实在一些其他正经介绍lisp的书中都是非常小心地强调宏的危害——良好定义的宏会有非常强大的力量，但是一些垃圾宏会让整个程序变得难以理解并且混乱不堪。</p>
+
+<p>其实我看懂宏是由于<a href="http://www.ibm.com/developerworks/cn/linux/l-metaprog1.html">这</a>篇文章，这文章没有任何对宏的赞扬，但是一旦你读懂你就会发现宏真正伟大的地方，它是从实用的角度来介绍宏，这种实用就是把宏当成代码生成器，并且文章还将宏与编译器以及一些其他技术进行对比来突出宏的优点。宏的基本概念在那篇文章中已经说得很清楚了，在这里就不罗嗦了。在这里我就只说一下为什么宏在scheme中非常好写，以及它的危害。</p>
+
+<h2 id="scheme的宏的实现">scheme的宏的实现</h2>
+
+<p>几乎所有的scheme实现都支持R5RS标准，这个标准定义了syntax-rules宏，在R6RS标准中定义了syntax-case宏，但是由于几乎所有的主流scheme实现都没有支持R6RS，很多也没有支持的打算，所以我就没去学。相对于Common Lisp的宏scheme的是相当的高阶，scheme的syntax-rules基于的是Patterns/Templates，也就是说在scheme中写宏只需要定义宏匹配的模式以及模式对应的模板就能实现干净的宏了。但是Common Lisp却没有这实现，只能用更加底层的宏。具体syntax-rules用法可以看<a href="http://www.scheme.com/tspl3/further.html#./further:h0">这</a>本书，这里也不说了。</p>
+
+<h2 id="宏的匹配">宏的匹配</h2>
+
+<p>根据前面<a href="http://www.ibm.com/developerworks/cn/linux/l-metaprog1.html">那</a>篇文章，宏本身是用来生成代码的，这样说就是把编写宏和编写编译器进行比较了，只是宏更加简单，因为lisp整个语言表示就是基于链表的，而链表可以实现更加复杂的树型结构，这就类似于编译原理常常提到的语法树，是的，这也就是为什么Paul说写lisp程序就是直接写语法树了，而scheme宏的Patterns匹配的很大程度上就依赖于这一点。</p>
+
+<p>使用syntax-rules可以让我们非常好地理解lisp相对于其他语言的优势：假设我们要实现and的<a href="http://en.wikipedia.org/wiki/Short-circuit_evaluation">短路效应</a>，我们可以按照下面的方法进行定义：</p>
+
+<pre>(define-syntax and
+  (syntax-rules ()
+    ((and e1 e2)
+     (if e1 e2 #f))))</pre>
+
+<p>在定义了and宏之后我们用如下方法使用：</p>
+
+<pre>(and (not (= x 0)) (/ 1 x))</pre>
+
+<p>这是一个经典的避免被除数为0的方法，我们直接匹配了and宏，然后宏帮我们扩展成原始的语法。其中e1匹配了(not (= x 0))，e2匹配了(/ 1 x)，之后宏再将and表达式扩展成(if (not (= x 0)) (/ 1 x) #f)，这样前面对于and宏的调用就能按照预计的去执行。这一切最值得惊奇的是宏竟然能恰如预想的让e1匹配(not (= x 0))，而不是(或not等，这是因为你在写这代码时已经用括号指明了(not (= x 0))是一个表达式，他们是不能再分的了，假如lisp没有这些括号那么这样表达力超强的宏也就没有了用武之地。用任何其他语言都无法实现这样高效的宏。</p>
+
+<h2 id="为什么要小心宏">为什么要小心宏？</h2>
+
+<p>lisp最为核心的一些函数就是lambda，car，cdr，eval，apply等，这些函数都是非常简单的，如果只有这些那么lisp是真正的没有任何语法了。这些基本的函数以及用户定义的函数运行方式由下面两个规则定义，这就是eval函数遵循的规则：</p>
+
+<ol>
+  <li>先解析表达式的子表达式。</li>
+  <li>整个表达式最左边子表达式的值就是操作符，其他子表达式的值就是操作数，将操作数作为参数调用操作符。</li>
+</ol>
+
+<p>所以对于下面的表达式：<br />
+(+ (- 3 1) (* 2 3) 2)<br />
+lisp是先eval(- 3 1)和(* 2 3)，再将这些表达式的返回值当作参数传给+函数。</p>
+
+<p>在你写上面的表达式时你根本不需要考虑任何语法，甚至连算符的优先级都不需要考虑！所以说lisp是几乎没有语法的，正是由于这一点lisp可以说是非常容易学习的语言，你不需要像学其他语言一样去记住所有的语法，对于基本函数的调用规则只需要记住eval函数的两个规则就行。在开发软件时也一样，只使用最核心的函数可以让整个软件变得容易理解。宏一般是作为扩展lisp的语法而存在的，也就是说你定义一个宏就相当于定义了一个语法，这些语法会增加整个程序的复杂度，让软件变得更加难以理解。所以对于大型的软件要尽量少用宏，如果能用函数尽量用函数，不要用宏。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/">学习lisp的总结以及scheme和common lisp的比较</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2011/12/%e7%90%86%e6%80%a7%e5%92%8c%e5%bf%ab%e4%b9%90/">理性和快乐</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2011/12/scheme%e7%9a%84%e5%ae%8f/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2011/12/scheme%e7%9a%84%e5%ae%8f/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

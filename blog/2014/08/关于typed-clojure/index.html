@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>关于Typed Clojure | Xudifsd</title>
+    <meta name="description" content="最近一直很忙，都没空写什么东西了。今天终于闲下来了一些，现在正值今年GSOC项目要结束，而且国内关于Typed Clojure的资料少得可怜，所以写点东西介绍一下。Typed ClojureTyped Clojure的作用就是给Clojure语言提供一个可选的类型系统，以获得与静态类型语言同等的类型检查能力，但是...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2014/08/%e5%85%b3%e4%ba%8etyped-clojure/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>关于Typed Clojure</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2014-08-17
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#clojure" title="Category: clojure" rel="category">clojure</a>&nbsp;
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#clojure" title="Tag: clojure" rel="tag">clojure</a>&nbsp;
+    
+        <a href="/blog/tag/#gsoc" title="Tag: gsoc" rel="tag">gsoc</a>&nbsp;
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#typed-clojure" title="Tag: typed-clojure" rel="tag">typed-clojure</a>&nbsp;
+    
+        <a href="/blog/tag/#开源" title="Tag: 开源" rel="tag">开源</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>最近一直很忙，都没空写什么东西了。今天终于闲下来了一些，现在正值今年GSOC项目要结束，而且国内关于Typed Clojure的资料少得可怜，所以写点东西介绍一下。</p>
+
+<h1 id="typed-clojure">Typed Clojure</h1>
+
+<p><a href="http://typedclojure.org/">Typed Clojure</a>的作用就是给Clojure语言提供一个可选的类型系统，以获得与静态类型语言同等的类型检查能力，但是这种能力的获得仍然是需要一定的代价：那就是使用者需要为每一个全局变量以及函数都加上类型注释，现有的类型可以见项目的<a href="https://github.com/clojure/core.typed/wiki/Types">wiki</a>。不过它确实能完成对Clojure的类型检查，甚至包括对nil或者java null的捕捉，这一点还是很帅的。</p>
+
+<p>感兴趣的话可以看作者Ambrose在Clojure conj上的<a href="https://www.youtube.com/watch?v=wNhK8t3uLJU">介绍视频（需翻墙）</a>，这个介绍讲的还是很清楚的。Typed Clojure完全通过Clojure的宏来实现，而不需要特殊的解释器或编译器，这也是Lisp类语言最大的优势，试想如果需要给python加一个类型系统，不自己重写个解释器是不可能。</p>
+
+<p>Typed Clojure受<a href="http://docs.racket-lang.org/ts-guide/">Typed Racket</a>的影响很大，很多理念都是借鉴自他们，甚至我今年的实现内容也受到他们的影响。就健全性来说Typed Racket要优秀很多，因为Typed Clojure现在就只有Ambrose在维护，<a href="https://github.com/clojure/core.typed#contributors">贡献者</a>也很少。而Typed Racket就有点像是一个学术项目了，它们的贡献者以及维护者大多是Northeastern University PLT实验室的博士或博导，他们大多会在这上面发论文，比如这篇<a href="https://samth.github.io/epfl-4-14-2014.pdf">介绍</a>，就说“Typed Racket is not just a nice language … it’s also informing PL research at every level”。</p>
+
+<h1 id="我的工作">我的工作</h1>
+
+<p>我今年GSOC的内容就是给Typed Clojure类型系统添加两个函数类型，让Clojure中一些特别奇葩的函数也能使用first class type做类型标记而不需要在类型系统内部特殊处理。这些奇葩的函数就包括<code class="language-plaintext highlighter-rouge">assoc</code>和<code class="language-plaintext highlighter-rouge">hash-map</code>。因为这两个函数对参数还有特殊的要求：因为都是操作map的，所以要求接收的参数与返回值map的key和value的类型匹配，而且也要求参数是成对出现的。</p>
+
+<p>Typed Clojure已经有了和Typed Racket类似的<a href="http://www.ccs.neu.edu/racket/pubs/esop09-sthf.pdf">dotted type variables</a>，这种类型已经可以用来表示不限参数个数的、任意类型的函数，并在结果上对参数类型加以限制。但是却无法表示要求参数成对出现，所以之前Ambrose的想法就是提供一个类似<code class="language-plaintext highlighter-rouge">...2</code>这样的语法来表示参数成对出现，不过这种做法有点类似将参数写死在类型系统里，如果之后出现了要求参数成三个出现，则又必须提供<code class="language-plaintext highlighter-rouge">...3</code>这样的语法。</p>
+
+<p>在与Typed Racket的人交流后，我们决定使用最lisp的方式解决——使用list。简单来说就是给list类型加上一个<code class="language-plaintext highlighter-rouge">:repeat</code>这样的属性，让<code class="language-plaintext highlighter-rouge">:repeat</code>的list可以匹配与它长度成倍的list，例如，<code class="language-plaintext highlighter-rouge">(HVec [Number String] :repeat true)</code>可以匹配<code class="language-plaintext highlighter-rouge">(HVec [Number String])</code>以及<code class="language-plaintext highlighter-rouge">(HVec [Number String Number String])</code>之类的，并且给函数类型加上<code class="language-plaintext highlighter-rouge">&lt;*</code>以及<code class="language-plaintext highlighter-rouge">&lt;...</code>这样的语法，意思是将多出来的参数捕获并与它之前的类型进行匹配，它之前的类型一般是有<code class="language-plaintext highlighter-rouge">:repeat</code>属性的list，这样就很好地解决了写死参数的问题——多给list内部加一个类型就能支持参数成三个出现的要求了。</p>
+
+<p>如果对细节感兴趣的话可以看下我写的关于我的<a href="https://github.com/xudifsd/core.typed/blob/repeat-support/docs/tutorial-on-inference.md">实现细节</a>以及Typed Clojure类型推导的<a href="https://github.com/xudifsd/core.typed/blob/repeat-support/docs/tutorial-on-inference.md">文档</a>。</p>
+
+<p>Typed Clojure现在仍然很不成熟，从版本号（0.2.66）就可以看出来，现阶段已经可以在一些小的项目中使用了，但是我觉得在真正的生产环境还是最好不要使用，首先一个原因就是它的类型检查还是比较慢的，再者就是他的硬伤——学习成本，需要在项目中使用就需要完完全全学会它的类型注释。</p>
+
+<h1 id="如何向clojure贡献">如何向Clojure贡献</h1>
+
+<p>Clojure以及任何Clojure官方库的贡献都要求签<a href="http://clojure.org/contributing">CA</a>，以前还必须是纸质信件邮寄到美国，现在终于<a href="https://twitter.com/richhickey/status/476048628289925121">支持电子版了</a>，内牛满面。不过签完CA后还不能通过github的PR进行贡献，必须通过<a href="http://dev.clojure.org/jira/secure/Dashboard.jspa">Clojure的JIRA</a>提交patch。这确实有点麻烦，但是Clojure也是通过这种手段保证不会有有版权代码的进入。</p>
+
+<p>如果想要给Clojure或它的官方库贡献代码的话可以从它的JIRA中的issues下手，因为那里一般都是一些实现的bug，会有比较清晰的思路着手，并且能在这个过程中熟悉原有代码结构。</p>
+
+<h1 id="关于开源">关于开源</h1>
+
+<p>今年参与Typed Clojure觉得最大的收获就是了解了下国外的开源是怎么运作的，我觉得这中间最重要的就是sponsor扮演的角色。很多项目开发者要不就是兼职开发开源项目要不就是全职开发了，比如我的mentor Ambrose就是全职在开发Typed Clojure，但是收入从哪来呢？就是通过sponsor，比如他就通过国外的<a href="https://www.indiegogo.com/projects/typed-clojure">众筹</a>来筹得一些项目经费。</p>
+
+<p>甚至在Typed Clojure还没开始时，sponsor就在扮演很重要的角色了，见<a href="http://cemerick.com/2011/11/08/ambrose-has-received-his-clojure-scholarship-thanks-to-you/">此</a>。Ambrose就是这样参加了那次Clojure conj，并在这个会上介绍逻辑编程，在会下和别人交流时别人提到有类型系统的需求，然后Ambrose才开始着手实现Typed Clojure的。</p>
+
+<p>国内貌似还是没有这样的捐助气氛的吧。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2014/06/%e5%a4%8f/">夏</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/10/%e6%b3%a8%e5%86%8c%e8%b1%86%e7%93%a3%e4%ba%94%e5%91%a8%e5%b9%b4/">注册豆瓣五周年</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2014/08/%e5%85%b3%e4%ba%8etyped-clojure/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2014/08/%e5%85%b3%e4%ba%8etyped-clojure/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

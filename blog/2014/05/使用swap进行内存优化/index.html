@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>使用swap进行内存优化 | Xudifsd</title>
+    <meta name="description" content="继上次优化后，我们的程序又一次被内存问题所烦。上次使用惰性解决了内存消耗的问题，但是由于上次我们只是需要使用AST一次，使用完后就可以将其删除，比较简单。但是现在问题更加复杂了一些。由于我们做的是符号执行，程序需要像JVM一样在运行中保存应用的所有类。但又由于我们没有对内存中的类的表示也就是AST做任何优化，所以...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2014/05/%e4%bd%bf%e7%94%a8swap%e8%bf%9b%e8%a1%8c%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>使用swap进行内存优化</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2014-05-30
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#java" title="Tag: java" rel="tag">java</a>&nbsp;
+    
+        <a href="/blog/tag/#optimization" title="Tag: optimization" rel="tag">optimization</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>继<a href="/blog/2014/01/%e8%ae%b0%e4%b8%80%e6%ac%a1%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96/">上次</a>优化后，我们的程序又一次被内存问题所烦。上次使用惰性解决了内存消耗的问题，但是由于上次我们只是需要使用AST一次，使用完后就可以将其删除，比较简单。但是现在问题更加复杂了一些。</p>
+
+<p>由于我们做的是符号执行，程序需要像JVM一样在运行中保存应用的所有类。但又由于我们没有对内存中的类的表示也就是AST做任何优化，所以非常耗内存。因此也可以说这次的优化就是在给之前的代码擦屁股。只是因为这次擦得漂亮，而且有一定的通用性，值得写点东西记录下。</p>
+
+<p>和上次一样，这次最耗内存的结构还是那个AST，但是又由于我们需要保存所有的AST，所以之前惰性的优化有些用，但是也只是让我们死得更慢些而已。优化AST不可取就是因为工作量会很大，而且之前的AST经过了很严密的测试，不会有问题，如果优化后AST错了也会很难debug。于是我们想到了直接把不常使用的AST像操作系统那样swap out到磁盘上，在需要时再swap in即可。而且最棒的是我们之前使用Map来存所有的AST，所以这次优化只需要写一个实现了Map接口的类即可，可以做到只需要修改现有的很少代码。</p>
+
+<p>由于实现了Map接口，而且功能是swap一部分内容出内存，因此取名为SwapMap。分离出来的SwapMap的代码见<a href="https://github.com/xudifsd/lab/blob/master/Javalab/SwapMap.java">此</a>。需要注意的是这个类对使用有很多限制：首先是这个类只有在key很小，value很大时才会起作用，因为它会一直保存key在内存中，而只对value优化。其次是我们虽然将value扫出，但是却没法像操作系统那样将其所使用的内存也收回，只有等待JVM把内存GC，所以使用这个类的其他代码也必须小心地处理引用问题，如果一直有对value的引用，那么即使value被扫出也没法释放内存。当然还有个要求就是value必须实现Serializable接口。</p>
+
+<p>当前这个类只实现了get和put方法，其他方法应该能比较简单地实现，只是由于我们不需要而已。另外需要强调的是这个类的作者<strong>不是</strong>我，而是我们实验室的<a href="https://github.com/YKG">YKG</a>。</p>
+
+<p>这是我们优化前的运行图，内存使用随着AST的生成一直在增长，最后到1.5G时基本挂掉。</p>
+
+<p><a href="/blog/statics/2014/05/opt_before.png"><img class="aligncenter wp-image-308" src="/blog/statics/2014/05/opt_before.png" alt="优化前" width="519" height="442" srcset="/blog/statics/2014/05/opt_before.png 1014w, /blog/statics/2014/05/opt_before-300x255.png 300w" sizes="(max-width: 519px) 100vw, 519px" /></a></p>
+
+<p>这是我们优化后的图，基本上能做到只需要很少的内存即可，因为执行有很强的局部性，所以运行时只需要执行的AST在内存中，其他的AST都可以直接扫出。所以曲线会增长一点然后等AST使用完后在被扫出时下降，这样的内存使用比优化前不知道少了多少倍。</p>
+
+<p><a href="/blog/statics/2014/05/opt_after.png"><img class="aligncenter wp-image-309" src="/blog/statics/2014/05/opt_after.png" alt="优化后" width="519" height="442" srcset="/blog/statics/2014/05/opt_after.png 1014w, /blog/statics/2014/05/opt_after-300x255.png 300w" sizes="(max-width: 519px) 100vw, 519px" /></a></p>
+
+<p>可以看到效果很好嘛（其实就是因为之前太懒造成AST结构太大才能显现这么好的优化效果）。</p>
+
+<p>这样的优化和之前的优化一样，都是对整个结构的优化，效果会非常好，但是这样的机会并不多，对于更加细致的优化也更加需要能力，而且需要十分清楚程序的内部热点。这里推荐下<a href="http://visualvm.java.net/">VisualVM</a>，可以很清楚地显示每个对象占用的内存，不过比较坑爹的就是它不会将对象的成员变量也算入该对象所占的内存，除非变量是非引用类型。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2014/04/google-summer-of-code-2014/">Google Summer of Code 2014</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/06/%e5%a4%8f/">夏</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2014/05/%e4%bd%bf%e7%94%a8swap%e8%bf%9b%e8%a1%8c%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2014/05/%e4%bd%bf%e7%94%a8swap%e8%bf%9b%e8%a1%8c%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

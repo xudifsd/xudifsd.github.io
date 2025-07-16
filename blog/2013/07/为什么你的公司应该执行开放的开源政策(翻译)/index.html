@@ -1,0 +1,621 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>为什么你的公司应该执行开放的开源政策（翻译） | Xudifsd</title>
+    <meta name="description" content="很久以前看《维基经济学》里说到IBM准备实行开源时做了研究：投资linux项目所花资金比IBM从linux项目中获得的收益少多了，所以IBM决定投资linux，并实行开放的开源政策。但是总觉得开源没那么简单。现在在公司做cascading的项目，又由于对clojure感兴趣，所以搜了下cascalog。于是机缘巧...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2013/07/%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%a0%e7%9a%84%e5%85%ac%e5%8f%b8%e5%ba%94%e8%af%a5%e6%89%a7%e8%a1%8c%e5%bc%80%e6%94%be%e7%9a%84%e5%bc%80%e6%ba%90%e6%94%bf%e7%ad%96(%e7%bf%bb%e8%af%91)/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>为什么你的公司应该执行开放的开源政策（翻译）</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2013-07-26
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#大杂烩" title="Category: 大杂烩" rel="category">大杂烩</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#open-source" title="Tag: open-source" rel="tag">open-source</a>&nbsp;
+    
+        <a href="/blog/tag/#translation" title="Tag: translation" rel="tag">translation</a>&nbsp;
+    
+        <a href="/blog/tag/#开源" title="Tag: 开源" rel="tag">开源</a>&nbsp;
+    
+        <a href="/blog/tag/#翻译" title="Tag: 翻译" rel="tag">翻译</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>很久以前看《<a href="http://book.douban.com/subject/2265341/">维基经济学</a>》里说到IBM准备实行开源时做了研究：投资linux项目所花资金比IBM从linux项目中获得的收益少多了，所以IBM决定投资linux，并实行开放的开源政策。但是总觉得开源没那么简单。</p>
+
+<p>现在在公司做cascading的项目，又由于对clojure感兴趣，所以搜了下<a href="http://cascalog.org/">cascalog</a>。于是机缘巧合地搜到了cascalog创始人的<a href="http://nathanmarz.com/blog/">博客</a>，才发现他也是<a href="http://storm-project.net/">storm</a>和<a href="https://github.com/nathanmarz/elephantdb">ElephantDB</a>的创始人，并且发现他的博客也写得非常好。而且发现了<a href="http://nathanmarz.com/blog/why-your-company-should-have-a-very-permissive-open-source-p.html">这篇文章</a>，由于国内开源风气实在不行，所以把这篇文章翻译了下。希望大家能感受下。。。翻译得很烂，讲究看吧，如果英语好直接去看原版。</p>
+
+<p>以下文章为翻译，版权仍然归Nathan Marz所有。</p>
+
+<hr />
+
+<p> </p>
+
+<h1 style="text-align: center;">
+  为什么你的公司应该执行开放的开源政策
+</h1>
+
+<p>如果公司想要招到真正的星级程序员，那么执行开放的开源政策是很重要的。换句话说：优秀的程序员会尽量避免加入不开放的公司，因为参与开源项目是程序员提升自己市场价值的最好办法之一。</p>
+
+<h2 id="评估编程能力的传统方法并不有效">评估编程能力的传统方法并不有效</h2>
+
+<p>程序员市场，特别是顶级程序员市场是出了名的无效率。这种无效率性体现在缺乏好的评估方法。评估程序员的标准技术——简历，现场编程，离场编程项目——至多只能大概了解程序员的能力，但是都无法显示出一个人的远见力。当然，有些指标，如加入过成功的公司或有很显眼的称号，但是这些仍不足以显示一个人的编程能力。</p>
+
+<p>如果你是程序员，这种评估能力的无效率性会使得潜在雇主对你的_估值_低于你的_真正价值_。顶级程序员在市场上就会无法从低一级程序员中区别开，并且价值会被低估很多。顶级程序员需要更好的机制去表现自己的价值以便被更公平地估值。</p>
+
+<h2 id="开源使得市场对程序员估值更有效">开源使得市场对程序员估值更有效</h2>
+
+<p>开源是个均衡器。一个开源项目展示了程序员如何解决一个暂时没有可行解决方案的真实问题。开源项目给予程序员在面试中展示自己从设计到实现到测试的更广阔的视野。如果你是个伟大的程序员，这意味着可以显著减少你在市场上的估值与真实价值的鸿沟。</p>
+
+<p>一个程序员越被低估，那么他就应该越会想通过加入开源项目来使其估值得到提升。最被低估的是那些高端的被称为“摇滚明星”和“忍者”的程序员，所以这些程序员能从开源中得到更多。</p>
+
+<h2 id="一个不开放的政策会阻碍星级程序员提升自己的市场价值">一个不开放的政策会阻碍星级程序员提升自己的市场价值</h2>
+
+<p>既然最好的程序员有很强的激励去投资开源，那么他们就应该避免加入到不开放的公司，而倾向于加入开放的公司。这就意味着那些不开放的公司会不自觉地阻碍自己招到最优秀的程序员。</p>
+
+<p>公司会出于多方面的原因不喜欢开源自己的内部项目。他们可能会觉得自己将代码拱手让给潜在的竞争者，他们可能会不喜欢让雇员们通过提升自己市场价值让雇员们更贵，他们可能觉得开源让团队在建设真正商业产品时分心。这些都是公司在做出执行开放政策时所需要做的权衡，如果想招到真正的“摇滚明星”就必须做出这些权衡。</p>
+
+<p>公司也会从开源项目中得到其他好处。开源帮助公司在工程师社区中做了很好的广告。并且开源给这些公司在用户组和会议打自己广告的机会，让公司可以说出自己的品牌。最后，公司也可以通过开源项目得到外界的“免费贡献”。</p>
+
+<h2 id="这个见解还不是所有人都知道">这个见解还不是所有人都知道</h2>
+
+<p>很多程序员现在还没意识到自己投资开源的价值，并且很多优秀的程序员仍然在为并不开放的公司工作。但是随着越来越多的程序员意识到开源能提升自己的价值，越来越多的公司就会把实行开放的政策做为招聘时的优势。比如，我的公司<a href="http://www.backtype.com/">BackType</a>就有十分开放的<a href="http://www.backtype.com/opensource">开源政策</a>，并且我们正在<a href="http://www.backtype.com/jobs">招人</a>。（译注：BackType已经被twitter收购，Nathan Marz也自己去创业了，不用期望加入BackType能见到他，见他的另外一篇<a href="http://nathanmarz.com/blog/leaving-twitter.html">博文</a>，至于他去干什么了看<a href="http://nathanmarz.com/blog/my-new-startup.html">这</a>，只是里面说的内容和文章的发布时间有点让人觉得不可信【笑】。）</p>
+
+<p>当然，除了开放的政策，想要招到顶级程序员还要做更多。只是如果没有开放的政策会给招聘那些顶级程序员设置障碍而已。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2013/06/%e8%bf%91%e4%b8%a4%e4%b8%aa%e6%9c%88%e6%80%bb%e7%bb%93/">近两个月总结</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2013/08/chubby(zookeeper)%e5%92%8cpaxos/">chubby（zookeeper）和paxos</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2013/07/%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%a0%e7%9a%84%e5%85%ac%e5%8f%b8%e5%ba%94%e8%af%a5%e6%89%a7%e8%a1%8c%e5%bc%80%e6%94%be%e7%9a%84%e5%bc%80%e6%ba%90%e6%94%bf%e7%ad%96(%e7%bf%bb%e8%af%91)/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2013/07/%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%a0%e7%9a%84%e5%85%ac%e5%8f%b8%e5%ba%94%e8%af%a5%e6%89%a7%e8%a1%8c%e5%bc%80%e6%94%be%e7%9a%84%e5%bc%80%e6%ba%90%e6%94%bf%e7%ad%96(%e7%bf%bb%e8%af%91)/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

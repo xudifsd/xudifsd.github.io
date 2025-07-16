@@ -1,0 +1,706 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>闭包，词法作用域和lambda函数 | Xudifsd</title>
+    <meta name="description" content="在学习编程时最重要的是了解程序解析器或编辑器的运行过程，有很多解析器模型可以用于模拟这些过程，在学习支持lambda函数的语言时有一个非常好用的解析器模型——环境解析模型，这个模型在《SICP》中提到，这方法对于学习lambda解析很有效。几乎所有支持lambda函数的都可以使用这种方法来模拟解析器运行，目前我知...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>闭包，词法作用域和lambda函数</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2011-11-08
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#javascript" title="Tag: javascript" rel="tag">javascript</a>&nbsp;
+    
+        <a href="/blog/tag/#lambda" title="Tag: lambda" rel="tag">lambda</a>&nbsp;
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>在学习编程时最重要的是了解程序解析器或编辑器的运行过程，有很多解析器模型可以用于模拟这些过程，在学习支持lambda函数的语言时有一个非常好用的解析器模型——环境解析模型，这个模型在<a href="http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-21.html#%_sec_3.2" target="_blank">《SICP》</a>中提到，这方法对于学习lambda解析很有效。几乎所有支持lambda函数的都可以使用这种方法来模拟解析器运行，目前我知道的支持lambda函数的语言有JavaScript， Lisp和Haskell。</p>
+
+<h2 id="环境">环境</h2>
+
+<p>想要理解环境解析方法就必须先理解环境。环境就类似于存储键值对的通用仓库，所有对变量值的查找都是在环境中查找，而环境则是由更小的帧对象组成，如何理解呢？下图显示了几个由帧组成的环境</p>
+
+<p><a href="/blog/statics/2011/11/Environment.png"><img class="aligncenter size-full wp-image-71" title="Environment" src="/blog/statics/2011/11/Environment.png" alt="环境和帧" width="252" height="271" /></a></p>
+
+<p>上图有三个帧，分别为1、2、3，其中a、b、c分别指向这些帧，1是最底层的帧，2和3都指向帧1，用继承的语言来说就是帧1是帧2和帧3的父帧。从a来看，变量x、y的值都为100；从b来看x为2，y为100，z为5，x是2而不是100是由于从b看时帧2中的x会屏蔽帧1中的x，而从b也能找到y就是因为帧2指向帧1；同理从c来看x为100，y为10而z为100。这样我们可以总结出在环境中查找变量的规则：如果在当前帧没有找到变量的值，找当前帧的父帧，直到找值到或者当前帧没有指向其他帧。这种环境由帧组成的方法提供了很大的便利，这些便利可以从后面的讨论中看出。</p>
+
+<h2 id="函数对象">函数对象</h2>
+
+<p>在任何支持lambda函数的语言中，函数都可以看作一个函数对象，这意味着函数是有属性的，他们有两个属性：函数代码和环境，函数代码就是定义函数时写的函数代码，而环境就是定义函数时的环境。函数对象可以用以下图形表示：</p>
+
+<p><a href="/blog/statics/2011/11/Function_object.png"><img class="size-full wp-image-74" title="Function_object" src="/blog/statics/2011/11/Function_object.png" alt="" width="121" height="194" /></a></p>
+
+<p>从上图可以看出一个函数的结构，左边的菱形保存的是函数定义的代码（虽然在实现时出于效率的考虑不可能保存代码的文本，但这样可以集中思考），右边保存指向环境的指针。每次创建一个函数都会创建一个这样的函数对象。这与其他语言如C语言不同的就是支持lambda的语言都支持在运行时动态创建函数，这样创建的函数会捕捉到创建它时的环境，同时也允许将函数作为参数或返回值，这就是为什么在这些语言中函数被称为顶级对象（First Class Object）。</p>
+
+<h2 id="环境解析的方法">环境解析的方法</h2>
+
+<p>环境解析方法有两个规则，一个针对函数的定义，也就是lambda函数，另一个针对函数的调用。规则如下：</p>
+
+<ol>
+  <li>函数定义时会捕捉定义时的环境。</li>
+  <li>函数运行在它被定义的环境中。</li>
+</ol>
+
+<p>我们可以通过例子和图来模拟环境解析的方法，假设有如下代码：</p>
+
+<pre>(define (make-acc base)
+	(lambda ()
+		(set! base (+ 1 base))
+		base))</pre>
+
+<p>上面的代码定义了一个累加器，它接受一个参数作为累加器的基数，返回一个从这个基数进行累加的函数。定义了这个函数之后得到如下环境：</p>
+
+<p><a href="/blog/statics/2011/11/Environment_eval1.png"><img class="size-medium wp-image-72" title="Environment_eval1" src="/blog/statics/2011/11/Environment_eval1-300x198.png" alt="" width="300" height="198" srcset="/blog/statics/2011/11/Environment_eval1-300x198.png 300w, /blog/statics/2011/11/Environment_eval1.png 430w" sizes="(max-width: 300px) 100vw, 300px" /></a></p>
+
+<p>在这之后运行如下代码：</p>
+
+<pre>(define from-100 (make-acc 100))</pre>
+
+<p>这会产生如下的环境：</p>
+
+<p><a href="/blog/statics/2011/11/Environment_eval2.png"><img class="aligncenter size-medium wp-image-75" title="Environment_eval2" src="/blog/statics/2011/11/Environment_eval2-300x204.png" alt="环境解析方法2" width="300" height="204" srcset="/blog/statics/2011/11/Environment_eval2-300x204.png 300w, /blog/statics/2011/11/Environment_eval2.png 522w" sizes="(max-width: 300px) 100vw, 300px" /></a></p>
+
+<p>这个图非常形象地描述了环境解析方法的规则，make-acc是个lambda函数，调用该函数会新建一个环境帧2，这个环境帧包括的就是形参和实参的对应关系，这个帧的父帧就是make-acc函数属性中的环境，这确保了函数中的自由变量也能得到正确的引用，在创建环境帧之后会运行lambda表达式，这会定义一个新的函数，而这个函数的环境属性就指向刚刚创建的这个环境，如果之后再调用from-100时from-100会在环境2上运行而不是环境1上运行，它会修改帧2中的base变量，让其自增1然后返回自增后的值。这种函数在定义的环境中运行而不是在调用它的环境中运行的特点就是词法作用域。而这样的特性也就产生了最为优美的闭包。在这个简单的例子中也产生了一个闭包：只有from-100函数能访问创建该函数时给的参数base，其他任何函数都无法访问base，这有些类似面向对象语言中的private属性，但这完全是通过函数的闭包特性来实现的，而不需要动摇整个语言，增加语言解析器的复杂度。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/10/scheme%e5%ae%9e%e7%8e%b0%e5%87%bd%e6%95%b0%e7%9a%84memoization%e4%bb%a5%e5%8f%8a%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%ad%a6%e4%b9%a0lisp/">Scheme实现函数的Memoization以及为什么要学习Lisp</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/">记一次Linux grub恢复</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

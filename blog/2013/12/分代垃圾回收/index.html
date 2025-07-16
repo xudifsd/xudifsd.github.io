@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>分代垃圾回收 | Xudifsd</title>
+    <meta name="description" content="以前写scheme解释器时完全不去考虑垃圾回收，直接链接个libgc完事。因为当时觉得垃圾回收还是很神秘的，而且懒得花时间去调试内存，只想把解释器的功能赶紧实现了。没想到现在能有机会自己实现个垃圾回收。学校里上的编译课上要求实现一个简单的拷贝收集，而且最后一个大项目我也选择去实现一个分代垃圾回收，其中和垃圾回收有...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2013/12/%e5%88%86%e4%bb%a3%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>分代垃圾回收</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2013-12-20
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#garbage-collection" title="Tag: garbage-collection" rel="tag">garbage-collection</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>以前写<a href="https://github.com/xudifsd/libsi">scheme解释器</a>时完全不去考虑垃圾回收，直接链接个<a href="http://www.hpl.hp.com/personal/Hans_Boehm/gc/">libgc</a>完事。因为当时觉得垃圾回收还是很神秘的，而且懒得花时间去调试内存，只想把解释器的功能赶紧实现了。没想到现在能有机会自己实现个垃圾回收。学校里上的编译课上要求实现一个<a href="http://staff.ustc.edu.cn/~bjhua/courses/compiler/2013/labs/lab4/index.html">简单的拷贝收集</a>，而且最后一个<a href="https://github.com/xudifsd/tiger/tree/Final">大项目</a>我也选择去实现一个分代垃圾回收，其中和垃圾回收有关的部分全部在<a href="https://github.com/xudifsd/tiger/blob/Final/runtime/gc.c">这</a>。</p>
+
+<p>现在觉得垃圾回收真是很简单，而且也越来越觉得<a href="/blog/2013/03/%e4%b8%a4%e7%a7%8d%e5%9f%ba%e6%9c%ac%e7%9a%84gc%e6%96%b9%e6%b3%95%e5%92%8c%e4%bb%96%e4%bb%ac%e7%9a%84%e5%85%b3%e7%b3%bb/">之前博客</a>推荐的那篇关于垃圾回收的综述性<a href="http://atlas.cs.virginia.edu/~weimer/2008-415/reading/bacon-garbage.pdf">论文</a>很牛了，把所有垃圾回收都纳入同一理论，再推荐一次。</p>
+
+<h1 id="拷贝收集">拷贝收集</h1>
+
+<p>拷贝收集算是垃圾回收中最简单的了，觉得coursera上的<a href="https://www.coursera.org/course/compilers">compiler</a>课的17-03课就讲得很清楚了（不知道怎么分享coursera的视频），听完后就能自己实现一个了，具体实现这里就不说了。</p>
+
+<p>这算法的好处就是时间复杂度只和活对象的数目有关，不像mark &amp; sweep与堆大小有关。所以特别适合对垃圾比较多的堆进行收集，但是缺点就是会浪费一半内存。</p>
+
+<h1 id="分代垃圾回收">分代垃圾回收</h1>
+
+<p>分代垃圾回收是基于两个观察：</p>
+
+<ul>
+  <li>大部分对象存活时间短</li>
+  <li>很少有年老对象指向年轻对象</li>
+</ul>
+
+<p>第二个情形特别适用于函数式语言，在scheme中出现这种情况只可能是调用了<code class="language-plaintext highlighter-rouge">set-car!</code>和<code class="language-plaintext highlighter-rouge">set-cdr!</code>之类的函数了。不过就算是在java中这种情况也很少出现，所以就像为了利用局部性原理出现cache一样，也出现了利用这两种情景的分代回收。</p>
+
+<h2 id="术语">术语</h2>
+
+<h3 id="root">root</h3>
+
+<p>判断对象是否是垃圾的方法就是看程序能否引用到这个对象，程序访问对象有个起点，这个起点就是root，在C中root就是所有data段，<a href="https://en.wikipedia.org/wiki/.bss">bss段</a>和stack段的指针。java中就是所有类的静态域和栈引用。</p>
+
+<h3 id="minor-collect">minor collect</h3>
+
+<p>由于大部分对象活的时间都比较短，所以空间很容易就塞满了垃圾，需要对年轻代进行收集，收集的起点就是root，但是不要忘了老对象也能指向年轻对象的，如果只看root而不看老对象的引用，那么就会回收非垃圾。但是老年堆一般又比较大，如果每次收集都要遍历一遍年老对象会非常慢。下面会说到几个方法可以加快年老对象的扫描这个过程。</p>
+
+<h3 id="major-collect">major collect</h3>
+
+<p>如果对象能逃过几次minor collect那么根据之前的观察就有理由相信这个对象短期内不会变成垃圾，这样就能把它从年轻堆提升到年老堆，但是年老对象也总有变成垃圾的一天，这样就要对年老堆进行一次收集，这种收集就叫做major collect，由于需要扫描整个堆所以这个过程非常耗时，如果是用的<a href="https://en.wikipedia.org/wiki/Garbage_collection_(computer_science)#Stop-the-world_vs._incremental_vs._concurrent">stop the world</a>方法，用户程序就会出现短暂的卡顿，如果卡顿明显就不能接受了，所以之后jvm的很多垃圾回收算法都只是为了缩短这个卡顿时间而已。</p>
+
+<p>关于分代垃圾回收也有篇<a href="https://www.cs.ucsb.edu/~ckrintz/racelab/gc/papers/appel88simplegen.pdf">论文</a>可以看，里面就讲到了怎么解决分代GC的一个关键问题：如何处理年老对象指向年轻对象这种情况，有使用类似操作系统脏页的方法还有种直接记录引用的方法。</p>
+
+<h2 id="堆间root">堆间root</h2>
+
+<p>假设现在内存情况如下图</p>
+
+<p><a href="/blog/statics/2013/12/overview.png"><img class="aligncenter size-full wp-image-276" alt="overview" src="/blog/statics/2013/12/overview.png" width="539" height="407" srcset="/blog/statics/2013/12/overview.png 539w, /blog/statics/2013/12/overview-300x226.png 300w" sizes="(max-width: 539px) 100vw, 539px" /></a></p>
+
+<p>如果在进行minor collect时只考虑root会出现什么情况？年轻代左下角的对象就会被当做垃圾被回收，结果就是程序执行结果不对。而且这种bug完全没法调试。但是如果在进行minor collect时扫描一遍年老堆，性能就不可能好，因为一般来说年老堆都会比较大。</p>
+
+<p>前面说的关于分代垃圾回收的那篇论文就有个算法来解决这个问题，需要特殊硬件来处理，类似于现在操作系统页表的脏位，只是这个脏位并不是在每次写时置1，而是在每次将年轻代地址赋值给年老代时才置1。这个需要特殊硬件支持，貌似是当年lisp机器的硬件，不过这种方法也可以拿软件模拟，如下图。</p>
+
+<p><a href="/blog/statics/2013/12/card.png"><img class="aligncenter size-full wp-image-277" alt="card" src="/blog/statics/2013/12/card.png" width="539" height="431" srcset="/blog/statics/2013/12/card.png 539w, /blog/statics/2013/12/card-300x239.png 300w" sizes="(max-width: 539px) 100vw, 539px" /></a></p>
+
+<p>这时年老堆被分成三块，上面的表中数字就表示对应的年老堆中是否有对年轻堆的引用。所以在进行minor collect时不仅仅需要考虑普通的root也需要考虑这种堆间root，在上图中，这种情况就还需要扫描年老堆的第三个部分。这样年轻堆的左下角的对象就不会被当成垃圾被回收。这种方式如果需要软件来模拟就需要编译器在每条赋值语句后都插一条函数调用，这个函数需要判断参数是不是将年轻对象的引用赋值给年老对象，如果是则需要给相应位置1。</p>
+
+<p>不过既然使用软件来做，就完全可以把范围缩得更小，因为前面的方法还是需要扫描堆的很大一个部分，所以我在实现时就直接记录了年老对象的地址，这样在minor collect时只需要扫描对应对象的引用就行，我是拿链表实现的，并对链表进行了排序。拿链表做主要是因为之前说的年老对象指向年轻对象的情况虽然有但是还是很少，不过更好的数据结构应该是红黑树，但是我就不做这么复杂了。而且在没有确切证据说链表不适合这种工作时还是没必要在这里进行优化，因为链表实现起来实在很简单。这个方法也需要编译器在每条赋值语句后插入条和前面说的类似的函数调用。</p>
+
+<h2 id="mark--compact">mark &amp; compact</h2>
+
+<p>在进行major collect时我使用的是mark &amp; sweep算法，用这个算法有个顺带的好处就是可以直接使用相关的碎片整理算法。之前觉得碎片整理很复杂，但是去搜，发现有<a href="https://en.wikipedia.org/wiki/Mark-compact_algorithm">mark &amp; compact</a>算法了，它有个<a href="http://en.wikipedia.org/wiki/Mark-compact_algorithm#LISP2_Algorithm">LISP2算法</a>很简单（lisp的历史遗产真不是一般的多）。我的实现是在每次major collect时都要进行一次碎片整理，但是应该可以不需要这么频繁，如果真需要把这东西实际用起来，这里应该可以优化成少做几次compact。</p>
+
+<h2 id="内存分配方式和策略">内存分配方式和策略</h2>
+
+<p>我的实现需要年老堆必须是一块连续的内存地址，之前还有段时间纠结怎么获得连续的空间，因为设计的年老堆是可以根据需要动态分配内存的，如果每次分配都调用<code class="language-plaintext highlighter-rouge">mmap(2)</code>来分配就必须用上它的第一个参数并加上<code class="language-plaintext highlighter-rouge">MAP_FIXED</code>标志，但是这样做很不靠谱，一旦第一次<code class="language-plaintext highlighter-rouge">mmap(2)</code>给的地址接下来的几页马上就是其他已经被使用的地址，那么mmap就会失败，这种情况也是很容易发生的，不能依赖这种情况。在豆瓣上问了下后就有答案了（谢谢@<a href="http://www.douban.com/people/dutor/">dutor</a>给的建议）：在初始化时使用<code class="language-plaintext highlighter-rouge">mmap(2)</code>分配尽可能大的内存空间，因为大部分系统都使用惰性分配，所以不会有问题，但是在写了这些内存区域后操作系统就不知道这块内存是不是会再被用到，如果应用确定不需要用到时再调用<code class="language-plaintext highlighter-rouge">madvise(2)</code>并加上<code class="language-plaintext highlighter-rouge">MADV_DONTNEED</code>就能在保持地址空间的前提下释放内存，下次再需要时再调用<code class="language-plaintext highlighter-rouge">madvise(2)</code>加上<code class="language-plaintext highlighter-rouge">MADV_WILLNEED</code>即可。</p>
+
+<p>对于用户程序的内存请求，这个实现是直接从年轻代分配，如果能分配成功，那么速度会非常快，因为只是需要对指针进行一次加法即可。但是如果年轻代空间不够时就需要进行一次minor collect，每进行一次minor collect就会对每个活对象的扫描次数增一，一旦达到阈值就会将对象提升到年老堆。年老堆会准备一定空间进行拷贝，如果年老堆的空间也不够就会调用一次<code class="language-plaintext highlighter-rouge">major_collect</code>，但是并不是每次调用<code class="language-plaintext highlighter-rouge">major_collect</code>都会真正进行major collect，我设置了一个时间域。如果上次major collect离这次不久就不做任何事，如果这样空间还是不够就会按照前面说的调用<code class="language-plaintext highlighter-rouge">madvise(2)</code>进行分配。再不够就OOM了。</p>
+
+<p>实际上jvm也基本上是这么做的，只是jvm是在一个叫Eden堆的地方分配，该堆满了后拷贝到survive区，survive区就完全和我的年轻堆一样，有一个大小一样的from和to区，但是jvm的Eden堆的大小是from区和to区的几十倍，因为有论文指出年轻堆中会有98%的垃圾，只有2%能存活下来，所以Eden堆满了后把所有活对象拷贝到from区，也只需要拷贝Eden堆的2%，这样from区和to区的大小基本上只需要Eden堆的2%即可。这样看来前面说的拷贝算法会浪费一半内存其实根本没什么。一个真正的系统就是要结合各种算法的优点，避免它们的缺点而已，重要的还是权衡这些算法。</p>
+
+<p>现在的实现还是有点问题就是即使最后没内存了也不一定是真没内存，因为有的OOM是对对象进行提升时导致的，如果不进行提升也就不会导致最后的OOM，而且相对于OOM，能不提升就不提升吧。所以这个也是这个实现需要改进的部分。</p>
+
+<p>现在感觉mark &amp; sweep的mark部分完全可以和用户程序并行跑，就算是sweep部分只要处理得小心也能大部分并行跑。所以有个后台的垃圾回收器会显著减少卡顿时间。</p>
+
+<p>在我真正开始写代码前我花了一整天的时间去考虑各个函数间的关系，以及算法的正确性，因为这种内存管理的代码一旦出错调试就会很麻烦，但是这个验证的过程也相当于熟悉算法的过程了。能掌握很多细节，而不是在调试中去痛苦地掌握，你一生至少应该经历一次。</p>
+
+<p style="text-align: center;">
+  <a href="/blog/statics/2013/12/should_do_it.png"><img class="aligncenter  wp-image-278" alt="should do it" src="/blog/statics/2013/12/should_do_it.png" width="570" height="314" srcset="/blog/statics/2013/12/should_do_it.png 1018w, /blog/statics/2013/12/should_do_it-300x165.png 300w, /blog/statics/2013/12/should_do_it-670x370.png 670w" sizes="(max-width: 570px) 100vw, 570px" /></a>
+</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2013/11/%e4%b8%93%e6%b3%a8/">专注</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/01/%e8%ae%b0%e4%b8%80%e6%ac%a1%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96/">记一次内存优化</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2013/12/%e5%88%86%e4%bb%a3%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2013/12/%e5%88%86%e4%bb%a3%e5%9e%83%e5%9c%be%e5%9b%9e%e6%94%b6/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

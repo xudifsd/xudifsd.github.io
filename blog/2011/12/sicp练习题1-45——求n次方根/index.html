@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>SICP练习题1.45——求n次方根 | Xudifsd</title>
+    <meta name="description" content="《SICP》第一章最后有个练习非常有意思：求n次方根。书的第一章几乎用了所有的篇幅来讲一些算法和抽象，并且在第一章第一节就说到了用牛顿迭代法来求一个数的平方根，在第一章最后一节的练习中要求一个数的n次方根。根据书上前面几节的说法，求x的平方根就是求函数y-&gt;x/y的不动点，而不动点的求法就相当简单了，随便猜...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2011/12/sicp%e7%bb%83%e4%b9%a0%e9%a2%981-45%e2%80%94%e2%80%94%e6%b1%82n%e6%ac%a1%e6%96%b9%e6%a0%b9/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>SICP练习题1.45——求n次方根</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2011-12-19
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>&nbsp;
+    
+        <a href="/blog/tag/#SICP" title="Tag: SICP" rel="tag">SICP</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>《<a href="http://book.douban.com/subject/1451622/">SICP</a>》第一章最后有个练习非常有意思：求n次方根。书的第一章几乎用了所有的篇幅来讲一些算法和抽象，并且在第一章第一节就说到了用<a href="http://en.wikipedia.org/wiki/Newton's_method">牛顿迭代法</a>来求一个数的平方根，在第一章最后一节的练习中要求一个数的n次方根。</p>
+
+<p>根据书上前面几节的说法，求x的平方根就是求函数y-&gt;x/y的<a href="http://en.wikipedia.org/wiki/Fixed_point_(mathematics)">不动点</a>，而不动点的求法就相当简单了，随便猜一个数带入函数，如果结果不好再将结果带入函数，最终函数总会得到不动点。但是如果直接这样求平方根会有一个问题：函数并不收敛（假设最开始猜y，那么带入函数会得到x/y，将结果再带入函数又得到y），补救办法就是使用一个叫average damp的方法（实在找不到中文的翻译，直译过来就是平均阻尼），average-damp可以直接用下面函数定义出来：</p>
+
+<pre>(define (average-damp f)
+    (lambda (x)
+        (average x (f x))))</pre>
+
+<p>这个函数的作用就是取函数返回值和函数参数的平均数，这样先对y-&gt;x/y这个函数取average damp，再对结果取不动点就能得到平方根了。我们也能用同样的方法取一个数的三次方根，只要将函数换为y-&gt;x/y<sup>2</sup>即可，但是对于四次方根无法得到结果，原因也是不收敛，而解决办法竟然是对原始函数取两次average damp。题目要求我们做实验得出为了取n次方根而必须取average damp次数的规律，这样我们可以定义下面的函数：</p>
+
+<pre>(define (fixed-point f guess)
+ (define (close-enough? a b)
+  (&lt; (abs (- a b)) 0.0001))
+ (let ((guess-value (f guess)))
+  (if (close-enough? guess guess-value)
+   guess
+   (fixed-point f guess-value))))
+
+(define (repeated f n)
+ (define (iter f n result)
+  (if (&lt; n 1)
+   result
+   (iter f (- n 1) (lambda (x) (f (result x))))))
+ (iter f n identity))
+
+(define (average-damp f)
+ (lambda (x)
+  (average x (f x))))
+
+(define (average a b)
+ (/ (+ a b) 2))
+
+(define (square x)
+ (* x x))
+
+(define (nth-root x n)
+ (fixed-point
+  ((repeated average-damp 2)
+   (lambda (y) (/ x (expt y (- n 1)))))
+  1))</pre>
+
+<p>其中fixed-point需要一个函数f，和一个最初的猜测数，返回满足要求的不动点；而repeated将带入的函数f迭代n次。<br />
+实验结果如下：</p>
+
+<pre>#;1&gt; (nth-root 8 3)
+2.00003461276416
+#;2&gt; (nth-root 128 7)
+1.9999526734277</pre>
+
+<p>但是一到8次方根以上程序便会在两个数之间跳转，因此需要再将函数average damp一次，而函数到了16次方后又需要average damp一次。这样看基本上得出了规律：只需要将所求的根数取log<sub>2</sub>即可，但是scheme只提供了以自然对数为底的log函数，不过只需要定义下面的函数就可以求以2为底的log了：</p>
+
+<pre>(define (log2 x)
+ (/ (log x) (log 2)))</pre>
+
+<p>这样我们就能够解决1.45的习题了：</p>
+
+<pre>(define (nth-root x n)
+ (fixed-point
+  ((repeated average-damp (floor (log2 n)))
+   (lambda (y) (/ x (expt y (- n 1)))))
+  1))</pre>
+
+<p>由于数学能力有限实在是无法证明为什么结果是这样，而且对于average damp这样一种方法维基百科上竟然没有！以前的数学实在学得不怎么样啊。不过《SICP》的习题做起来确实很有意思，还教你直接求tan、黄金分割数还有e的方法。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/12/%e7%90%86%e6%80%a7%e5%92%8c%e5%bf%ab%e4%b9%90/">理性和快乐</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2012/01/linux%e5%ad%a6%e4%b9%a0%e6%80%bb%e7%bb%93/">Linux学习总结</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2011/12/sicp%e7%bb%83%e4%b9%a0%e9%a2%981-45%e2%80%94%e2%80%94%e6%b1%82n%e6%ac%a1%e6%96%b9%e6%a0%b9/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2011/12/sicp%e7%bb%83%e4%b9%a0%e9%a2%981-45%e2%80%94%e2%80%94%e6%b1%82n%e6%ac%a1%e6%96%b9%e6%a0%b9/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

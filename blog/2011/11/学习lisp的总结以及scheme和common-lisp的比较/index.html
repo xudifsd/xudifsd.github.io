@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>学习lisp的总结以及scheme和common lisp的比较 | Xudifsd</title>
+    <meta name="description" content="似乎很少有人刚开始编程就使用lisp，一般常见编程入门语言主要是C，Java，python等非常流行的语言。许多学lisp的人应该都和我一样是半路迁移过来的，到现在为止我学lisp断断续续的有半年了，现在总结一下这半年来都做了什么，顺便帮助一些其他的想学lisp的人。我学lisp时看过的书见这个豆列。学习lisp...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>学习lisp的总结以及scheme和common lisp的比较</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2011-11-24
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>似乎很少有人刚开始编程就使用lisp，一般常见编程入门语言主要是C，Java，python等非常流行的语言。许多学lisp的人应该都和我一样是半路迁移过来的，到现在为止我学lisp断断续续的有半年了，现在总结一下这半年来都做了什么，顺便帮助一些其他的想学lisp的人。我学lisp时看过的书见这个<a href="http://book.douban.com/doulist/1336074/">豆列</a>。</p>
+
+<h2 id="学习lisp的痛苦和好处">学习lisp的痛苦和好处</h2>
+
+<p>一般从其他语言迁移到lisp会经历各种痛苦，因为它有太多的其他语言不具有的概念：闭包，词法作用域，高阶函数，宏，即使撇开这些不谈一般人也会受不了lisp那么多的括号。其实括号这个问题也并不严重，最开始我刚从python迁到C就有很大的不适应：C竟然要求每个表达式后加分号！python用惯了后突然学C，每写一个程序编译时的错误都是没有最后的分号，当时跟同学讨论觉得这是C语言的一大失败啊。刚开始学lisp时也一样，在定义一个函数之后要想把剩余的括号都打完还要靠编辑器的匹配，否则绝对眼花。但是现在习惯之后问题也没什么大不了的了：只要你在括号的开始位置放对，中间括号的位置匹配对，定义一个函数之后的括号匹配简直就是一种享受：终于只要按着shift+0看着编辑器括号匹配的颜色正确就能完成一个函数了。</p>
+
+<p>而那些神秘的概念就更有意思了，使用这些别的语言没有的概念可以让你学会很多，而且一旦你学会就会发现这些正是lisp优美的原因。其中我觉得宏是lisp中最为奇特的特性，Paul在<a href="http://book.douban.com/subject/6021440/">《黑客与画家》</a>中就说到了“在lisp中编程就像直接修改语法树，这样的语法树在其他语言中本来应该是在编译程序是生成的，但是在lisp中可以直接修改。”这句话本来我一直没理解，就算是拿lisp编程很长一段时间如果你不接触宏也是无法体会这句话的。打个简单的比方：写宏在原理上非常类似于写一个编译器，编译器本质上就是将一个更简单的语言翻译成更复杂的语言，这样让人们可以用更简单的语法来编程，之后再用编译器将简单的语法翻译成更接近机器理解能力的语言就行：所谓的牺牲CPU时间来节省程序员时间。而宏做的就是这样的工作，编程人员定义一个具有简单语法的宏让它匹配宏的调用，之后宏就像普通函数一样将简单的语法翻译成更复杂的语法，而宏的匹配就是基于lisp的语法树特性，如果没有语法树的特点lisp也就是另一个Haskell而已。如果你能把宏用得很好那么你可以只靠宏来实现世界上的任意一种语言。这样的好处实际上很大程度上是由lisp程序中令人烦躁的括号带来的。</p>
+
+<h2 id="选择lisp方言">选择lisp方言</h2>
+
+<p>lisp和其他语言不同点之一就是它的方言众多，当初我听方言这词的时候都乐出来了：自然语言有方言那么编程语言当然也能有方言。其实lisp的每个方言也有很大的差别，虽然他们都大量使用括号，但是一些内部表示和基本函数也不一样。其实我觉得学lisp最重要的就是选择一个lisp的方言。lisp有三个使用最广泛的方言：Emacs Lisp， Common Lisp（以下称CL）和scheme，其中Emacs Lisp是专门服务于Emacs编辑器的，可以忽略不计。一般关注的是另外两种方言：CL和scheme。CL是用得最为广泛的Lisp标准，它本身也提供了很多标准的库，还有也有标准的IO库，而scheme则非常严格的贯彻了精简的原则，整个核心的被标准定义的函数不超过100个，其他的都由实现来决定。</p>
+
+<p>从上面的介绍来看就能够作出一些选择了：CL非常适合于严谨的软件开发，因为语言的标准库能够实现大部分的功能，如果使用它来开发会非常方便，但是scheme则完全相反，什么都需要从头开始，除非你使用的scheme实现提供了一些基本的库。这么一比较似乎先学CL比较好，但是我倒觉得先学scheme更好，因为CL有些太大了，整个标准有许多的函数，你根本不知道自己是不是学完了，而且最为奇怪的是CL的符号（也就是通常意义上的变量）允许存多个值，也就是说CL允许允许一个符号即是函数同时也包含值，这样的定义有些奇怪，我完全不知道为什么要这样定义，而正是这样的定义让你每次引用符号的函数时需要在前面加个#，否则你引用的是符号的值。而且CL的宏相当地低阶，不像scheme有自己的宏系统可以方便地实现干净的宏，从上面的意义上来说CL非常适合已经非常熟悉lisp的人去开发正经的程序，但是不适合初学者。</p>
+
+<p>相比于CL，scheme语言非常精简，标准的<a href="http://en.wikipedia.org/wiki/Scheme_(programming_language)#Review_of_standard_forms_and_procedures">核心函数</a>不到100个，其他由实现来决定的函数主要都是IO方面，所以说只要你将那不到100个核心函数学会你就基本上会了scheme了，并且IO库是相当简单的，可以在非常短的实际内学会。但是这样的后果就是scheme的除核心之外的函数十分混乱：有时你在一个scheme实现能用的函数再另一个就改名甚至根本就没定义。所以scheme非常适合于初学，但是并不是很适合开发，并且在学scheme时选择一个好的实现也非常重要，我觉得最好用的一个实现是<a href="http://www.call-cc.org/">Chicken</a>。</p>
+
+<h2 id="学习的书籍">学习的书籍</h2>
+
+<p>学习lisp语言首先要推荐的就是计算机科学的神书<a href="http://book.douban.com/subject/1451622/">《Structure and Interpretation of Computer Programs》</a>，这书也是相当有争议的，这本书的作者就是scheme语言的发明者Sussman，他自己在MIT教学，当年就拿这书进行计算机科学的教学，MIT的开放课视频有当年课程的<a href="http://ocw.mit.edu/courses/electrical-engineering-and-computer-science/6-001-structure-and-interpretation-of-computer-programs-spring-2005/">视频</a>，可以免费下载。这课本来一直都是使用scheme和《SICP》进行教学，但是最近改成了使用python进行教学，并且书也换了。这样一换引起了很大的轰动，很多人都认为这是从教授计算机科学转向教授编程，直接将大学降级成职业学院的标志。而且这书在<a href="http://www.amazon.com/Structure-Interpretation-Computer-Programs-Second/dp/0070004846/ref=sr_1_1?ie=UTF8&amp;qid=1322051357&amp;sr=8-1">美国亚马逊</a>的评价很有意思：呈现了两极分布，有一半的人给5星，也有一半的人给1星，几乎没有评价中等的，这样的评价分布足以证明这书的优秀：优秀的人看明白了并且学到了很多，所以打5星，并不优秀的人根本看不懂，所以打1星。这本书虽然是以scheme语言为基础但是根本不需要人们已经掌握scheme，就像书中说的：“既然lisp不是主流语言为什么还要拿它做框架讲课，就是因为lisp语言实际上根本没有语法，这样就能把大部分精力用于讲计算机科学而不是讲授特定语言的语法。”这本书讲到了很多的如何使程序更加优美，如何控制大型软件的复杂度，并且还讲到了很多的编程范式和编程模式：面向对象，事件驱动还有并发编程等。所以学这本书会非常有价值，不能只把它看成一本介绍语言的书。</p>
+
+<p>如果你想学习CL，Paul自己写的<a href="http://book.douban.com/subject/1456906/">《ANSI Common LISP》</a>就非常好，但是这也不是很适合初学着看，因为这虽然讲的是CL，但是继承了scheme的传统——简洁性，它用非常少的章节就把很多CL的重点讲完，不过总的来说这本书非常好，能学到很多语言的细节，并且题目的设计也不错。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/">记一次Linux grub恢复</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2011/12/scheme%e7%9a%84%e5%ae%8f/">scheme的宏</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

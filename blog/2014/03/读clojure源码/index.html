@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>读clojure代码 | Xudifsd</title>
+    <meta name="description" content="最近看了很多clojure代码，第一次这么大规模地看clojure代码，学到很多有意思的东西。全局变量是好事在一般语言中，全局变量一般会被认为是坏代码的征兆，但是这几天发现在clojure中完全不是这么一回事，全局变量用得好可以实现一些很有意思的功能。比如很多clojure的库都会把可配置的选项当成全局变量暴露出...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2014/03/%e8%af%bbclojure%e6%ba%90%e7%a0%81/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>读clojure代码</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2014-03-19
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#clojure" title="Category: clojure" rel="category">clojure</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#clojure" title="Tag: clojure" rel="tag">clojure</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>最近看了很多clojure代码，第一次这么大规模地看clojure代码，学到很多有意思的东西。</p>
+
+<h1 id="全局变量是好事">全局变量是好事</h1>
+
+<p>在一般语言中，全局变量一般会被认为是坏代码的征兆，但是这几天发现在clojure中完全不是这么一回事，全局变量用得好可以实现一些很有意思的功能。比如很多clojure的库都会把可配置的选项当成全局变量暴露出来，需要配置这些选项时只需要使用binding绑定你所需要的值就行。再比如你需要实现一个类似于可嵌套作用域的功能，在作用域内的表达式都能访问特定资源，出了作用域就不能访问了，这在其他语言中都需要某种栈式的结构，而且还需要保证栈的弹入弹出正确，但是clojure中就用dynamic全局变量再加上binding函数即可，如下：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(def ^:dynamic *scope* {})
+
+(binding [*scope* (merge *scope* {:a 1 :b 2})]
+    (println "in scope level 1:" *scope*)
+    (binding [*scope* (merge *scope* {:a 100 :c 2})]
+        (println "in scope level 2:" *scope*))
+    (println "returned from scope level 2, in scope level 1:" *scope*))
+</code></pre></div></div>
+
+<p>以上表达式输出</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>in scope level 1: {:b 2, :a 1}
+in scope level 2: {:c 2, :b 2, :a 100}
+returned from scope level 2, in scope level 1: {:b 2, :a 1}
+</code></pre></div></div>
+
+<p>clojure中处理这种功能实在是太简单了，根本不需要手动维护栈的平衡。所以全局变量是坏代码的征兆这点在clojure中根本不成立。</p>
+
+<p>而且这种功能结合宏写成with-xx-scope看起来会很清晰。</p>
+
+<p>当然，需要支持这功能也多亏了clojure的PersistentXX这些基础类。这些类即使在java中用也很爽，所谓的“虽然我写的是java，但是函数式的思想已经深深地嵌入我的脑海”。因为这些类把HashMap和链表这些传统上按引用传递的结构变换成了按值传递的结构，并且内部使用了共享的数据结构来降低内存使用，所以写多线程程序用这些会很安全。比如我在学校写的符号执行，一些基本的执行单元使用多线程跑，线程间有共用的数据，但是线程修改的数据只能自己可见，用上这种库就会很方便。</p>
+
+<h1 id="destructuring-binding">destructuring binding</h1>
+
+<p>最开始学destructuring binding时就奇怪这种语法形式很难看，而且貌似没什么用，在读代码时就发现错了。typed clojure把它用得很形象，比如为了取得<code class="language-plaintext highlighter-rouge">...</code>，<code class="language-plaintext highlighter-rouge">&gt;</code>和<code class="language-plaintext highlighter-rouge">&lt;</code>的位置可以这么干：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(let [{pos1 '... pos2 '&gt; pos3 '&lt;} (zipmap '[a b c ... &lt; &gt; 2 3] (range))]
+    (println pos1 pos2 pos3))
+</code></pre></div></div>
+
+<p>还有在typed clojure可以指定一个类型的范围，用形如<code class="language-plaintext highlighter-rouge">(x :&lt; Float :&gt; Long)</code>这种形式表示类型变量<code class="language-plaintext highlighter-rouge">x</code>至少为<code class="language-plaintext highlighter-rouge">Long</code>，至多为<code class="language-plaintext highlighter-rouge">Float</code>，在parse这种形式时也能使用destructuring binding来很简单地做到。</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(let [[v &amp; {:keys [&gt; &lt;]}] '(x :&lt; d :&gt; a)] (println &gt; &lt;))
+</code></pre></div></div>
+
+<h1 id="到处都是表达式">到处都是表达式</h1>
+
+<p>lisp中只有表达式，没有语句。好处就是什么样的程序结构都能写出来，由于clojure的let的绑定是顺序的，也就是说let的第一个绑定可以被第二个绑定使用，这样写程序时就能写成只有一个大大的let，例如</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>(let [x (calculate something)
+      y (calculate-another x)
+      _ (assert (pred? x y))
+      ...]
+   (construct-result))
+</code></pre></div></div>
+
+<p>这样在let内部实现函数逻辑，在let体内构造返回值返回，看起来还是挺方便的。</p>
+
+<h1 id="辅助函数">辅助函数</h1>
+
+<p>读源码时自己写了<a href="https://github.com/xudifsd/rtfc">一些辅助函数</a>来帮助阅读源码。读源码的时候经常需要动态地看某个函数的输入和输出，然后看它的参数输入和输出是什么来理解函数。但是情况常常是你要观察的函数的参数是一个比较复杂的数据结构，在REPL中手动创建这个数据结构当参数会很麻烦，甚至你不知道会有什么约束条件，所以一般会编辑源码加上几行print再调用，但是修改再载入再调用会很浪费时间，最好能直接在REPL中就能添加print语句。这在clojure中可以用<code class="language-plaintext highlighter-rouge">alter-root-var</code>来实现，虽然添加print的位置粗糙了点，但是在我看来够用了。</p>
+
+<p>这几个辅助函数中最重要的就是trace，在REPL中调用类似<code class="language-plaintext highlighter-rouge">(trace #'cgen/cs-gen pprint-all)</code>然后就能给程序一个输入让它跑。当调用到达cgen/cs-gen时就会先调用pprint-all输出cs-gen接收到的参数，然后再调用真正的cs-gen，最后输出cs-gen的返回值。如果对参数不关心只关心其返回值只需要在trace时把pprint-all换成ignore即可，想知道调用栈把pprint-all换成print-st即可。看完这个函数后再通过<code class="language-plaintext highlighter-rouge">(untrace #'cgen/cs-gen)就能</code>关闭输出。</p>
+
+<p>通过这种方法可以减少好多载入时间，特别是当情况特殊必须通过重启jvm来重新载入namespace时候特别爽。顺便吐槽一下lein repl启动时间实在是<strong>太</strong>慢了，要是有类似android的zygote那样预先加载所需类，启动一个lein repl实例只需简单fork就好了，这样就能减少很多启动时间了嘛。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2014/01/2013-2014/">2013->2014</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/04/google-summer-of-code-2014/">Google Summer of Code 2014</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2014/03/%e8%af%bbclojure%e6%ba%90%e7%a0%81/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2014/03/%e8%af%bbclojure%e6%ba%90%e7%a0%81/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

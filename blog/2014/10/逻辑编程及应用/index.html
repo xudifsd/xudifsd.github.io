@@ -1,0 +1,686 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>逻辑编程及应用 | Xudifsd</title>
+    <meta name="description" content="最近看了下逻辑编程，据说逻辑编程最牛的是prolog，但是没空再学一门语言了，而且看到clojure中刚好有core.logic的这个库，而且可以拿这个库写《The Reasoned Schemer》中的例子，所以就直接用这个库来学了。准备工作先把[org.clojure/core.logic "0.8.8"]放...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2014/10/%e9%80%bb%e8%be%91%e7%bc%96%e7%a8%8b%e5%8f%8a%e5%ba%94%e7%94%a8/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>逻辑编程及应用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2014-10-13
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#clojure" title="Category: clojure" rel="category">clojure</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#clojure" title="Tag: clojure" rel="tag">clojure</a>&nbsp;
+    
+        <a href="/blog/tag/#logic" title="Tag: logic" rel="tag">logic</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#type-system" title="Tag: type-system" rel="tag">type-system</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>最近看了下逻辑编程，据说逻辑编程最牛的是prolog，但是没空再学一门语言了，而且看到clojure中刚好有<a href="https://github.com/clojure/core.logic">core.logic</a>的这个库，而且可以拿这个库写《<a href="http://book.douban.com/subject/1726088/">The Reasoned Schemer</a>》中的<a href="https://github.com/clojure/core.logic/wiki/Differences-from-The-Reasoned-Schemer">例子</a>，所以就直接用这个库来学了。</p>
+
+<h2 id="准备工作">准备工作</h2>
+
+<p>先把</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>[org.clojure/core.logic "0.8.8"]
+</code></pre></div></div>
+
+<p>放到你的<code class="language-plaintext highlighter-rouge">project.clj</code>的依赖中，然后在repl中运行</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user=&gt; (require '[clojure.core.logic :as logic])
+</code></pre></div></div>
+
+<p>使用这个库的代码一般像</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user=&gt; (logic/run 1 [x] (logic/== x 100))
+(100)
+</code></pre></div></div>
+
+<p>其中<code class="language-plaintext highlighter-rouge">1</code>表明要的结果数量，因为约束条件不一定只有一种可能；<code class="language-plaintext highlighter-rouge">x</code>表示需要对哪个变量进行求解；而<code class="language-plaintext highlighter-rouge">(logic/== x 100)</code>就是所谓的goal了，整个逻辑编程的推动力就是满足goal。所以上面的代码读作“告诉我x的一个值让其满足x等于100”。因此表达式的值就是<code class="language-plaintext highlighter-rouge">(100)</code>，是一个包含值<code class="language-plaintext highlighter-rouge">100</code>的链表，这就是<code class="language-plaintext highlighter-rouge">x</code>应该取的值，因为我们限制结果数量为1，所以结果链表的长度不会大于1，当然，如果没有满足条件的值长度就为0。</p>
+
+<p>因为<code class="language-plaintext highlighter-rouge">logic/run</code>的body内部必须是goal而非普通表达式，一般的表达式都不能用在里面。所以这个库另外提供了一些针对链表操作的primitive，像firsto，resto和conso这样和clojure内置的first，rest和cons对应，加了一个o以示区别，而且与内置函数相比都多了一个参数——用于接受类似于内置函数的返回值。</p>
+
+<p>比如：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user=&gt; (logic/run 1 [x] (logic/conso 1 [2 3 4] x))
+((1 2 3 4))
+</code></pre></div></div>
+
+<p>意思是求让<code class="language-plaintext highlighter-rouge">x</code>满足等于<code class="language-plaintext highlighter-rouge">(cons 1 [2 3 4])</code>的值，所以结果也合乎想象，这种调用方式乍看起来感觉很像C语言中的传入一个指针，函数往这个地址中写数据来影响外部环境而不用写全局变量。但是其实不是这样理解，这种形式主要是为了让你可以指定一个结果，让库帮忙推导可以得出这种结果的初始状态，像：</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>user=&gt; (logic/run 1 [x] (logic/conso 1 x '(1 2 3)))
+((2 3))
+</code></pre></div></div>
+
+<p>这里就求出了<code class="language-plaintext highlighter-rouge">x</code>必须是’(2 3)才能满足<code class="language-plaintext highlighter-rouge">(= (cons 1 x) '(1 2 3))</code></p>
+
+<p>《The Reasoned Schemer》前面几章讲的都是对链表的操作，完全没涉及数学计算，但是第7、8章就描述了如何使用链表来表示数字的计算，方式类似于电子的门电路，然后组成全加器，最后组成高阶的<code class="language-plaintext highlighter-rouge">+o</code>、<code class="language-plaintext highlighter-rouge">*o</code>这些内置函数。不知道真实计算会用什么方法，可能会内置数学的一些操作吧，因为用链表来表示实在是太低效了，这样的用法只是适合理解一些原理。</p>
+
+<p>逻辑编程最基本的内容差不多就是这些了，抽象出来了一个goal，让编程者可以只需要编写规则，让程序自动求解，会大量用于<a href="https://en.wikipedia.org/wiki/Automated_reasoning">Automated reasoning</a>。</p>
+
+<h2 id="内部原理">内部原理</h2>
+
+<p>我对逻辑编程感兴趣的原因之一就是没法理解它是怎么实现的，甚至之前完全不知道逻辑编程是怎么样的一种形式，幸好《The Reasoned Schemer》不仅仅讲了怎么用，还讲了内部的实现原理。</p>
+
+<p>其实逻辑编程最基本的操作就是<code class="language-plaintext highlighter-rouge">==</code>操作了，用它来让两个值相等，然后求出满足这些等式的具体变量值，比如<code class="language-plaintext highlighter-rouge">(== x y)</code>和<code class="language-plaintext highlighter-rouge">(== x 100)</code>以及<code class="language-plaintext highlighter-rouge">(== '(x y) '(1 2))</code>等等，而这个操作最终依赖于unify函数，这也是我在做Typed Clojure项目之前查类型系统资料时完全没法理解的<a href="https://en.wikipedia.org/wiki/Unification_(computer_science)">unification</a>，也就是合一，但是书中给的代码就很好理解了。这里吐槽一下wiki，有些原理查wiki完全看不懂，它倾向于把一个道理讲得很细，但是在这众多的细节中很容易抓不到重点，其实wiki里面那么多废话完全就可以用几行代码来理解。</p>
+
+<p>goal在内部是一个函数，接受一个substitution，返回false或一个新的substitution，false表示合一失败，而返回substitution表示满足该goal，并且这个新的substitution也包含了满足该goal的新条件。goal一般不需要用户自己编写，一般是使用<code class="language-plaintext highlighter-rouge">==</code>让系统生成。而substitution可以理解成一个符号到值的映射，当然也可以是符号到符号的映射。比如给goal <code class="language-plaintext highlighter-rouge">(== x y)</code>一个空的substitution，就会产生一个<code class="language-plaintext highlighter-rouge">{x -&gt; y}</code>这样的substitution，而如果这个substitution再传递给<code class="language-plaintext highlighter-rouge">(== x 10)</code>这样的goal，那么就会产生<code class="language-plaintext highlighter-rouge">{x -&gt; 10, y -&gt; 10}</code>这样的映射。</p>
+
+<p>它的内部原理其实就是相当于将需要求解的goal转化成了一个树，然后让程序自动遍历这个树而已。</p>
+
+<p>比如</p>
+
+<p>其中每个<code class="language-plaintext highlighter-rouge">conde</code>条目都是在创建一个树的分支，<code class="language-plaintext highlighter-rouge">conde</code>在书中有详细描述，这里就不详细介绍了，简单来说它就相当于clojure里的<code class="language-plaintext highlighter-rouge">cond</code>。因此上面的代码实际上相当于遍历这样的树：</p>
+
+<p><a href="/blog/statics/2014/10/logic_tree.png"><img class="aligncenter size-full wp-image-333" src="/blog/statics/2014/10/logic_tree.png" alt="logic_tree" width="546" height="254" srcset="/blog/statics/2014/10/logic_tree.png 546w, /blog/statics/2014/10/logic_tree-300x139.png 300w" sizes="(max-width: 546px) 100vw, 546px" /></a></p>
+
+<p>表达式的结果为<code class="language-plaintext highlighter-rouge">([5 5 _0] [7 _0 7] [10 10 _0] [_0 _0 _0])</code>，其中<code class="language-plaintext highlighter-rouge">_0</code>表示可以为任意值，这样的每一个结果正好对应从根到叶子节点所积累的条件，所以有4个叶子节点就有4个结果，虽然我们请求5个结果。需要注意的是叶子节点不一定会满足条件，如果不满足则积累的substitution会被丢弃，就不会生成结果，而且一旦生成的结果满足了我们的需求量就不会继续计算，这也有点像lazy evaluation。</p>
+
+<p>所以逻辑编程的意义就在于不需要写树的遍历，让程序自动遍历罢了。不过这也是相当有用的一个抽象了，完全开创了一个新的编程模型。</p>
+
+<h2 id="实际用途">实际用途</h2>
+
+<p>我知道的其中一个用途，也是我想要了解逻辑编程的原因，就是因为它可以用于类型系统的类型推导，比如haskell里面的</p>
+
+<div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Prelude&gt; map id [1, 2, 3]
+[1,2,3]
+</code></pre></div></div>
+
+<p>这样的函数调用，其中<code class="language-plaintext highlighter-rouge">map</code>的类型为<code class="language-plaintext highlighter-rouge">map :: (a -&gt; b) -&gt; [a] -&gt; [b]</code>，<code class="language-plaintext highlighter-rouge">id</code>的类型为<code class="language-plaintext highlighter-rouge">id :: a -&gt; a</code>，而<code class="language-plaintext highlighter-rouge">[1, 2, 3]</code>的类型为<code class="language-plaintext highlighter-rouge">[Num]</code>，编译器需要怎么推断<code class="language-plaintext highlighter-rouge">map id [1, 2, 3]</code>的类型呢？这里困难的地方就在于<code class="language-plaintext highlighter-rouge">map</code>和<code class="language-plaintext highlighter-rouge">id</code>都是多态函数，所谓多态函数就是函数类型并不是确定的，需要用类型变量来确定真实的类型，因为<code class="language-plaintext highlighter-rouge">map</code>并不关心第一个参数的参数和返回值类型。如果在静态类型语言中不能用类型变量会非常痛苦，就像java那样还需要为int，double写各种版本的函数。但是这样的类型变量就会让类型检查很不方便，因为不能直接比较了，而如果让程序员在每个多态函数的调用部分都加上类型注释又显得太不智能，所以必须要编译器自己去做这样的类型推导。整个推导的过程就需要用到逻辑编程里的合一，也就是unification。</p>
+
+<p>这里详细解释一下整个推导过程。先解释一下函数的类型标记，<code class="language-plaintext highlighter-rouge">map</code>的<code class="language-plaintext highlighter-rouge">(a -&gt; b) -&gt; [a] -&gt; [b]</code>，这样的标记的意思表示<code class="language-plaintext highlighter-rouge">map</code>函数接受两个参数，第一个参数是参数类型为类型变量<code class="language-plaintext highlighter-rouge">a</code>，返回类型为类型变量<code class="language-plaintext highlighter-rouge">b</code>的函数，<code class="language-plaintext highlighter-rouge">map</code>的第二个参数是类型为类型变量<code class="language-plaintext highlighter-rouge">a</code>的链表，而<code class="language-plaintext highlighter-rouge">map</code>的返回值的类型为类型变量<code class="language-plaintext highlighter-rouge">b</code>。所以，如果类型变量<code class="language-plaintext highlighter-rouge">a</code>为Int，而类型变量<code class="language-plaintext highlighter-rouge">b</code>为String，那么<code class="language-plaintext highlighter-rouge">map</code>的第一个参数就必须是接受Int，返回String的函数，第二个参数必须是Int的链表，返回值是String的链表。</p>
+
+<p>而<code class="language-plaintext highlighter-rouge">id</code>这个函数接受什么返回什么，就是clojure中的identity，所以类型为<code class="language-plaintext highlighter-rouge">a -&gt; a</code>，为了之后的叙述方便把它改为<code class="language-plaintext highlighter-rouge">c -&gt; c</code>。</p>
+
+<p>所以在检查表达式<code class="language-plaintext highlighter-rouge">map id [1, 2, 3]</code>的类型时需要先推断出所有的类型变量所代表的真正类型，先推断第一个参数，可以很容易得到<code class="language-plaintext highlighter-rouge">{a -&gt; c, b -&gt; c}</code>这样的映射，之后再检查第二个参数，同时考虑已经得到的信息就会得到<code class="language-plaintext highlighter-rouge">{a -&gt; Num, b -&gt; Num, c -&gt; Num}</code>这样的映射，过程中没有类型变量的冲突，所以整个检查成功，而且可以得知整个表达式的返回值是Num的链表。</p>
+
+<p>考虑一个类型错误的表达式<code class="language-plaintext highlighter-rouge">map odd ["a", "b", "c"]</code>，其中<code class="language-plaintext highlighter-rouge">odd</code>函数的类型为<code class="language-plaintext highlighter-rouge">Num -&gt; Bool，不是多态函数</code>，这里推导出第一个参数时会得出<code class="language-plaintext highlighter-rouge">{a -&gt; Num, b -&gt; Bool}</code>这样的映射，推导第二个参数时会得出<code class="language-plaintext highlighter-rouge">{a -&gt; String}</code>，这和前面推导出的结果相冲突，所以合一失败，也就导致了类型检查失败。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2014/10/%e6%b3%a8%e5%86%8c%e8%b1%86%e7%93%a3%e4%ba%94%e5%91%a8%e5%b9%b4/">注册豆瓣五周年</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/11/sequential-consistency/">Sequential consistency</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2014/10/%e9%80%bb%e8%be%91%e7%bc%96%e7%a8%8b%e5%8f%8a%e5%ba%94%e7%94%a8/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2014/10/%e9%80%bb%e8%be%91%e7%bc%96%e7%a8%8b%e5%8f%8a%e5%ba%94%e7%94%a8/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

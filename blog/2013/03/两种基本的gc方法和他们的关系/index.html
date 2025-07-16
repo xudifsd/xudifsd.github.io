@@ -1,0 +1,654 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>两种基本的GC方法和他们的关系 | Xudifsd</title>
+    <meta name="description" content="垃圾收集是高级编程语言最重要的一部分，不过垃圾收集是否值得也要看具体应用，我就很同意这个观点。最近写了个玩具lisp解释器，由于不想自己去管理所有内存，所以用了libgc库，也顺便了解了下GC的一些技术。而对于垃圾收集有两种最基本的方式：reference count和tracing。更多的变种见此。Refere...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2013/03/%e4%b8%a4%e7%a7%8d%e5%9f%ba%e6%9c%ac%e7%9a%84gc%e6%96%b9%e6%b3%95%e5%92%8c%e4%bb%96%e4%bb%ac%e7%9a%84%e5%85%b3%e7%b3%bb/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>两种基本的GC方法和他们的关系</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2013-03-19
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#algorithm" title="Tag: algorithm" rel="tag">algorithm</a>&nbsp;
+    
+        <a href="/blog/tag/#gc" title="Tag: gc" rel="tag">gc</a>&nbsp;
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p><a href="http://en.wikipedia.org/wiki/Garbage_collection_(computer_science)">垃圾收集</a>是高级编程语言最重要的一部分，不过垃圾收集是否值得也要看具体应用，我就很同意<a href="http://blog.codingnow.com/2011/05/gc_performance.html">这个观点</a>。最近写了个玩具<a href="https://github.com/xudifsd/libsi">lisp解释器</a>，由于不想自己去管理所有内存，所以用了libgc库，也顺便了解了下GC的一些技术。</p>
+
+<p>而对于垃圾收集有两种最基本的方式：<strong>reference count</strong>和<strong>tracing</strong>。更多的变种见<a href="http://www.cs.cmu.edu/afs/cs/academic/class/15745-s06/web/handouts/garbage.pdf">此</a>。</p>
+
+<h2 id="reference-count">Reference Count</h2>
+
+<p><strong>reference count</strong>是最简单垃圾收集的方法，内核的代码就是<strong>手工</strong>模拟该算法的，而一些有虚拟机的语言就直接使用了该算法，例如<a href="http://thp.io/2012/python-gc/python_gc_final_2012-01-22.pdf">CPython</a>。</p>
+
+<p style="text-align: center;">
+  <a href="/blog/statics/2013/03/1.png"><img class="aligncenter  wp-image-219" alt="reference counting example" src="/blog/statics/2013/03/1.png" width="334" height="268" srcset="/blog/statics/2013/03/1.png 501w, /blog/statics/2013/03/1-300x240.png 300w" sizes="(max-width: 334px) 100vw, 334px" /></a>
+</p>
+
+<p>如果使用引用计数方法，那么所有的在堆上的对象都会多一些空间用于记录对该对象的引用数，见上图。并且该方法需要编译器或者解释器的特殊支持，否则上图中m = l语句和l-&gt;next = n语句就无法修改对象的引用计数（所以C中没有使用这种算法的库）。并且RC方法有个最不好的一面就是无法收集环状的垃圾。例如以下语句：</p>
+
+<pre>struct intlist *j, *k;
+j = alloc();
+k = alloc();
+j-&gt;next = k;
+k-&gt;next = j;
+j = k = NULL;</pre>
+
+<p>在以上语句执行完后在堆上应该没有任何东西，但是之前j和k所指向对象的引用计数却都是1（因为互相指向对方），所以单纯的引用计数的方法无法收集环状垃圾，这是它致命的缺点。它还有个缺点就是效率不高，因为每次对指针进行修改和赋值甚至以指针为函数参数都需要修改引用计数，这样的效率是很低下的。不过它的好处就是一旦有垃圾就马上收集，可以用于内存紧张的地方，不像Google的<a href="https://code.google.com/p/v8/">V8引擎</a>这么耗内存。</p>
+
+<h2 id="tracing">Tracing</h2>
+
+<p style="text-align: center;">
+  <a href="/blog/statics/2013/03/Naive_Mark_and_Sweep_Garbage_Collector1.gif"><img class="aligncenter  wp-image-222" alt="Mark and Sweep算法" src="/blog/statics/2013/03/Naive_Mark_and_Sweep_Garbage_Collector1.gif" width="280" height="214" /></a>
+</p>
+
+<p>另一种方法是通过探测哪些堆上的对象再也无法被引用来进行垃圾收集，由McCarthy（Lisp创造者）提出。它的基本理念是：从“根”开始遍历所有能被根引用的对象，并进行标记，完成后再遍历所有堆上的对象，那些没有被标记的对象就是无法被程序引用的垃圾，可以将他们回收。这就是<a href="http://en.wikipedia.org/wiki/Garbage_collection_(computer_science)#Na.C3.AFve_mark-and-sweep">Mark and Sweep算法</a>，见上图。</p>
+
+<p>但是该算法有个麻烦的地方就是需要找出“根”。所谓的“根”就是可以引用堆上对象的<strong>指针</strong>，所以程序需要扫描整个程序的bss段，data段和stack段，并找出那些看上去像指针的值（所谓看上去像就是值在堆的地址空间内，并且符合一定的对齐标准）。这样需要扫描的实现就叫保守式gc，因为它并不精确定位每个指针，这种实现方法就非常适合做C语言库。最出名的库就是<a href="http://www.hpl.hp.com/personal/Hans_Boehm/gc/">Boehm-Weiser GC</a>，它的实现有两个优化：</p>
+
+<ol>
+  <li>将堆置于内存的高地址，这样很少会有程序的整型值会是合法的堆地址。</li>
+  <li>假设所有符合对齐的值就是堆地址</li>
+</ol>
+
+<p>这种Tracing的方法可以避免reference count算法所无法识别的环状垃圾，所以某些reference count算法会有些优化来识别环状垃圾，而这种优化就是使用和tracing类似的方法。</p>
+
+<h2 id="两种算法的关系">两种算法的关系</h2>
+
+<p>这样初看起来两种算法似乎没有什么关系，但是<a href="http://atlas.cs.virginia.edu/~weimer/2008-415/reading/bacon-garbage.pdf">这篇论文</a>（感谢lisp聚会上的<a href="https://github.com/liancheng/">liancheng</a>提供）提到了这两种算法共享了一些最基本的结构。而其他所有GC算法只是为了时间或空间上的trade-off而结合两种算法。</p>
+
+<p>实际上，这两种算法最终都是要求出每个对象的精确引用计数（可以将tracing算法的标记当作退化了的引用计数），只是tracing算法倾向于低估对象的引用计数（在mark阶段初始化为0），而rc算法倾向于高估对象的引用计数（被引用计数为0的对象引用的对象的RC高于真实的RC）。并且tracing算法跟踪“活”对象的引用计数，而reference count算法跟踪“死”对象的引用计数（一旦某对象的引用计数为0就递归减少所有该对象引用了的对象的引用计数）。</p>
+
+<p>所以所有的GC算法的最终不同就是存储区域的划分和维护真实RC的方式的不同，在做出这些设计决定后就只是一些空间、时间的trade-off了。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2013/01/%e5%86%85%e6%a0%b8%e7%9a%84%e7%89%a9%e7%90%86%e9%a1%b5%e5%88%86%e9%85%8d%e5%99%a8/">内核的物理页分配器</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2013/04/%e8%99%9a%e6%8b%9f%e5%8c%96%e7%9a%84%e4%b8%a4%e7%a7%8d%e6%96%b9%e6%a1%88/">虚拟化的两种方案</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2013/03/%e4%b8%a4%e7%a7%8d%e5%9f%ba%e6%9c%ac%e7%9a%84gc%e6%96%b9%e6%b3%95%e5%92%8c%e4%bb%96%e4%bb%ac%e7%9a%84%e5%85%b3%e7%b3%bb/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2013/03/%e4%b8%a4%e7%a7%8d%e5%9f%ba%e6%9c%ac%e7%9a%84gc%e6%96%b9%e6%b3%95%e5%92%8c%e4%bb%96%e4%bb%ac%e7%9a%84%e5%85%b3%e7%b3%bb/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

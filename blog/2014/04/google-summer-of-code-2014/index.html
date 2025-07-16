@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Google Summer of Code 2014 | Xudifsd</title>
+    <meta name="description" content="首先非常感谢@0xFAN君之前的帮助，回答了我很多关于比赛的问题，还给我看了他以前的proposal做参考，觉得这次能进真是多亏了饭君的帮助啊！今年GSOC被接受的项目名单出来了，有1307个学生参加，其中就有我，想想还有点小激动呢。要知道我可是三年前就想进这个比赛了啊！当年大二刚学会C，但是已经用了两年多的纯l...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2014/04/google-summer-of-code-2014/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Google Summer of Code 2014</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2014-04-24
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>&nbsp;
+    
+        <a href="/blog/category/#生活" title="Category: 生活" rel="category">生活</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#gsoc" title="Tag: gsoc" rel="tag">gsoc</a>&nbsp;
+    
+        <a href="/blog/tag/#life" title="Tag: life" rel="tag">life</a>&nbsp;
+    
+        <a href="/blog/tag/#open-source" title="Tag: open-source" rel="tag">open-source</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p><a href="/blog/statics/2014/04/gsoc2014.jpg"><img class="aligncenter size-medium wp-image-302" alt="gsoc2014" src="/blog/statics/2014/04/gsoc2014-300x270.jpg" width="300" height="270" srcset="/blog/statics/2014/04/gsoc2014-300x270.jpg 300w, /blog/statics/2014/04/gsoc2014-1024x921.jpg 1024w, /blog/statics/2014/04/gsoc2014.jpg 1600w" sizes="(max-width: 300px) 100vw, 300px" /></a></p>
+
+<p>首先非常感谢<a href="http://www.douban.com/people/ofan/">@0xFAN</a>君之前的帮助，回答了我很多关于比赛的问题，还给我看了他以前的proposal做参考，觉得这次能进真是多亏了饭君的帮助啊！</p>
+
+<p>今年<a href="https://en.wikipedia.org/wiki/Google_Summer_of_Code">GSOC</a>被接受的项目<a href="https://www.google-melange.com/gsoc/projects/list/google/gsoc2014">名单</a>出来了，有<a href="http://google-opensource.blogspot.com/2014/04/students-announced-for-google-summer-of.html">1307</a>个学生参加，其中就有<a href="https://www.google-melange.com/gsoc/project/details/google/gsoc2014/xudifsd/5717271485874176">我</a>，想想还有点小激动呢。</p>
+
+<p>要知道我可是三年前就想进这个比赛了啊！</p>
+
+<p>当年大二刚学会C，但是已经用了两年多的纯linux，所以对开源充满好奇，也想参加个开源项目试试。当时看一个人的博客（现在已经没了）知道了GSOC，就想进去试试。现在想想那时连系统调用是什么、怎么用C打开一个文件都还不知道，就知道vim、linux是开源项目，所以只有看下以前参加GSOC的项目，觉得git这个项目还不错，而且是用C写的，linux都在用它，觉得应该挺牛X，而且社区成熟，文档挺多，于是就准备报它们的项目。了解了它们列出的idea，混了下邮件列表，准备做<a href="https://git.wiki.kernel.org/index.php/SoC2011Ideas#Better_big-file_support">让git支持大文件</a>的项目，mentor是<a href="https://github.com/peff">Jeff King</a>，搜他时发现他刚加入<a href="https://github.com/blog/766-jeff-king-peff-is-a-githubber">github</a>，于是也跟着注册了github。当时给Jeff发邮件聊项目，结果回我邮件说“我们更喜欢公开讨论问题”。由于对自己英语没这么大信心，发个邮件还要拼写、语法检查半天才敢发出去，而且一想到自己发的邮件会被全球这么多人看到，还会被Linus看到就觉得紧张得不行了，所以并没有交流很多，而且当时技术实在是不行，草草地看了下git源码，好多库函数都不知道，perror都不知道是什么，也去投了个proposal，结果早早地就被reject了。</p>
+
+<p>现在想来真是初生牛犊不怕虎，不过这次经历对我改变很大——注册了github，习惯于用git，严格要求自己的code style，知道开源项目怎么组织。之后还花了很多时间去认真地读git源码，还写了几篇git源码阅读的文章在这个博客上。所以之后用git简直熟到不行，很多同学有git问题都找我。</p>
+
+<p>之后三年由于准备考研、去北京实习，完全没时间参加，所以这比赛几乎成了我的梦想。今年终于有空出来的时间了，所以春节结束后马上就开始准备了。发现自己对于C不是那么感冒了，而学clojure已经半年了，所以就准备报个clojure的项目，看他们idea页的<a href="http://dev.clojure.org/display/community/Project+Ideas#ProjectIdeas-DynalintImprovedCoreClojureerrorsandwarnings">Dynalint</a>觉得挺简单的，于是就联系mentor，看了下code base，觉得真是太简单了，而且工作貌似也挺无聊，只是给这个工具加一些数据条目而已。不过这个mentor还有<a href="http://typedclojure.org/">Typed Clojure</a>项目，是给clojure加一个类型系统的，由于在学校做的项目是符号执行，对于静态分析了解了许多，所以最后选了Typed Clojure这个项目，其实现在回想起来还是觉得自己挺厉害的，两个月时间从完全不知道类型系统到现在提交了5个补丁。这期间也花了很多时间在这个项目上，所以被接受也是预料之中啦（笑）。</p>
+
+<p>这期间最大的发现就是开源项目的组织形式都有很大的差别，clojure的管理形式和linux、git那种完全靠邮件列表的形式完全不同，clojure全是通过<a href="http://dev.clojure.org/jira/secure/Dashboard.jspa">JIRA</a>这个问题管理系统来管理和讨论源码，而且所有补丁是通过patch文件作为附件来提交，不允许通过github的pull request接受外来补丁，就是为了避免版权问题——因为所有通过JIRA发送补丁的人都必须签<a href="http://clojure.org/contributing">CA</a>才行。不过我觉得这样就完全阻止了那些不想长期开发，只是想提交个补丁的人。你可能说这样可以提高代码质量，但是clojure的<a href="https://github.com/clojure/clojure/blob/master/src/jvm/clojure/lang/RT.java">java部分</a>是我见过的最丑的开源代码（只是指code style，不是指设计）。clojure的CA政策真是怎么吐槽都不为过，还要求邮寄，真是很打击积极性呢。当时为了签CA还寄邮件寄到Rich Hickey那，过了一个月还没收到，以为寄丢了，赶紧让在美国的<a href="http://www.douban.com/people/hacking/">师兄</a>重寄一份，结果过了几天我那封6块钱寄出的平邮有惊无险地寄到了，现在想想还真是神奇。</p>
+
+<p>有了CA后就时不时地发patch、问代码来跟mentor刷存在感了，到最后宣布结果已经给项目贡献了5个patch了，其中<a href="http://dev.clojure.org/jira/browse/CTYP-130">一个</a>还是比较大的，前前后后改了4、5次，rebase后总共7次提交。</p>
+
+<p>所以我也就没什么悬念地进了，不过进了后，国内同样参加GSOC的学生建了个QQ群，听他们讨论说有个人像我这样花了很多时间，也提交了很多patch，结果还是被拒，实在有点可怜。</p>
+
+<p><a href="/blog/statics/2014/04/discuss.png"><img class="aligncenter size-full wp-image-301" alt="discuss" src="/blog/statics/2014/04/discuss.png" width="385" height="243" srcset="/blog/statics/2014/04/discuss.png 385w, /blog/statics/2014/04/discuss-300x189.png 300w" sizes="(max-width: 385px) 100vw, 385px" /></a></p>
+
+<p>5月19就要正式开始写代码了，根据<a href="http://www.vim.org/soc/ideas.php">vim</a>的说法，学生是被期望每周工作40小时的，我猜这也是为什么每年印度学生越来越多，都超过美国本土学生的原因吧，因为奖金才5500刀，美国随便去哪实习也应该比这高吧，还期望工作40小时，倒是如果转成人民币之类的倒还值些钱。不过今年算是我最后有时间参加这个比赛，也算是完成了自己的一个梦想，走上了码农的一个巅峰啊。</p>
+
+<h1 id="如何参加">如何参加</h1>
+
+<p>其实这篇文章也是想宣传一下GSOC，因为我之前也是通过别人的博客知道这个比赛的，只是那人的博客已经不存在了，所以也相当于是传承了（笑），而且听群里的人说有几个也是看<a href="http://www.douban.com/people/pluskid/">pluskid</a>的<a href="http://blog.pluskid.org/?p=865">博客</a>才知道这比赛的。而更多的同学都不知道这个比赛，因为不知道而没能参加这样的比赛还是挺可惜的。</p>
+
+<p>其实把GSOC叫比赛并不好，最好是叫项目，因为它并不存在要熬几天夜去写代码马上实现某种功能，相反它有三个月时间让你完整地接触一个开源项目的方方面面——交流、修bug、写文档、写测试。所以这可是真正了解开源项目的好机会。还有5500刀的奖金，换成人民币还是挺不错的，而且参加这个项目会专门有开源组织的mentor来指导，实习时可没这种待遇啊，况且完成后还能跟别人吹吹牛B，何乐而不为呢？</p>
+
+<p>不过这项目有个限制就是必须是在读学生，不过不管是本科、硕士或是博士都行。如果你不是学生而是开源项目的贡献者也可以志愿当项目mentor，当然mentor就只有500刀的奖金了。我今年的mentor就是前两年以学生身份参加GSOC，今年以mentor身份参加。</p>
+
+<p>之后如果有人想参加GSOC并且有疑问的欢迎联系xudifsd (AT) gmail (DOT) com，我会尽力帮你，当然下一次项目得一年后了，而且每年Google都会说不确定第二年会不会继续举办。</p>
+
+<p>总的来说，Google Summer of Code还是很值得参加的，不仅对学生的工程能力有很多提升而且确实能吸引很多学生进入开源项目，现在很多项目都是靠GSOC来拉新人了，而且很多学生也挺靠谱，不仅当时贡献了代码，也成了项目的长期贡献者。</p>
+
+<p>希望能有越来越多的中国学生参加GSOC。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/10/%e4%b8%b9%e9%ba%a6/">丹麦
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/02/%e5%8f%b0%e6%b9%be%e6%b8%b8%e8%ae%b0/">台湾游记
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/12/2015%e5%b9%b4%e6%80%bb%e7%bb%93/">2015年总结
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2014/03/%e8%af%bbclojure%e6%ba%90%e7%a0%81/">读clojure代码</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/05/%e4%bd%bf%e7%94%a8swap%e8%bf%9b%e8%a1%8c%e5%86%85%e5%ad%98%e4%bc%98%e5%8c%96/">使用swap进行内存优化</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2014/04/google-summer-of-code-2014/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2014/04/google-summer-of-code-2014/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>给内核添加系统调用 | Xudifsd</title>
+    <meta name="description" content="注意：本文所使用的系统为ubuntu12.04，使用i386体系，如果使用不同系统及体系很多地方需要修改，另外在安装新内核后请保持至少一个可用的旧内核，以防止新内核无法使用。一直想直接给内核添加一些基本的东西作为内核开发的下手点，于是就想到了给内核添加一个新的系统调用。这样的添加非常简单而且可以直接通过应用程序看...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2012/11/%e7%bb%99%e5%86%85%e6%a0%b8%e6%b7%bb%e5%8a%a0%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>给内核添加系统调用</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2012-11-16
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Linux" title="Category: Linux" rel="category">Linux</a>&nbsp;
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#kernel" title="Tag: kernel" rel="tag">kernel</a>&nbsp;
+    
+        <a href="/blog/tag/#linux" title="Tag: linux" rel="tag">linux</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p><strong>注意：本文所使用的系统为ubuntu12.04，使用i386体系，如果使用不同系统及体系很多地方需要修改，另外在安装新内核后请保持至少一个可用的旧内核，以防止新内核无法使用。</strong></p>
+
+<p>一直想直接给内核添加一些基本的东西作为内核开发的下手点，于是就想到了给内核添加一个新的系统调用。这样的添加非常简单而且可以直接通过应用程序看是否成功，前些天就着《<a href="http://book.douban.com/subject/3291901/">Linux Kernel Development</a>》给内核加了个系统调用，没想到一次就成功了。</p>
+
+<h2 id="系统调用">系统调用</h2>
+
+<p>应用程序都是通过系统调用来取得操作系统提供的服务，但是除了汇编之外，这些系统调用在所有语言里都是对程序员不可见的，也就是说你不知道调用的是一个普通函数还是系统调用。</p>
+
+<p>先从开始用汇编进行系统调用来了解整个过程吧。<br />
+把以下代码保存在t1.s中：</p>
+
+<pre>.section .data
+word:
+        .ascii "Hello from assembly\n"
+word_end:
+.equ len, word_end - word	#取得字符串长度
+
+.section .text
+.global _start	#程序起点
+_start:
+        movl $4, %eax	#write系统调用的调用号
+        movl $1, %ebx	#stdout
+        movl $word, %ecx	#输出字符串的地址
+        movl $len, %edx	#字符串长度
+        int $0x80	#通过中断进行系统调用
+
+        movl $1, %eax	#exit的调用号
+        movl $3, %ebx	#退出码
+        int $0x80</pre>
+
+<p>使用如下命令编译，链接：</p>
+
+<pre>$ as t1.s -o t1.o &amp;&amp; ld t1.o -o t1</pre>
+
+<p>使用</p>
+
+<pre>$ ./t1</pre>
+
+<p>运行后可以看到程序输出“Hello from assembly”，通过</p>
+
+<pre>$ echo $?</pre>
+
+<p>可以看到程序的退出码为3。这里调用了两个系统调用，write和exit，从上面的程序也可以看出系统调用的参数是直接通过寄存器传递的，而不是像普通函数一样使用堆栈。而且参数按照在C函数原型中的顺序放在ebx,ecx,edx里，eax中放系统调用号。<br />
+关于使用汇编在linux下进行编程请看《<a href="http://book.douban.com/subject/1787855/">Programming From The Ground Up</a>》。</p>
+
+<h2 id="添加系统调用">添加系统调用</h2>
+
+<p>现在开始添加新的系统调用，首先添加系统调用代码，将下列代码加入到linux目录下的kernel/sys.c的末尾：</p>
+
+<pre>asmlinkage void sys_copy(long *src, long *dst)
+{
+        long buf;
+	buf = *src;
+	*dst = buf;
+}
+
+asmlinkage long sys_add(long a, long b)
+{
+        return a + b;
+}</pre>
+
+<p>这里我们定义了两个系统调用，一个将用户的数据从一个地方拷贝到另一个地方，这和swap的功能一样，只是在内核态中运行，不过需要注意的是这个函数没有进行任何安全性检查，这样应用程序可以传入一个指向内核地址的指针，去读取或修改内核的数据，这是一个巨大的安全问题，在真正开发中绝对不能这么干。另一个系统调用只是简单地将两个参数相加。</p>
+
+<p>之后要做的就是把系统调用的原型加到include/linux/syscalls.h头文件的末尾：</p>
+
+<pre>asmlinkage void sys_copy(long *src, long *dst);
+
+asmlinkage long sys_add(long a, long b);</pre>
+
+<p>最后一步是最重要的，这一步也和网上的很多资料不同，以前版本的内核添加系统调用还需要修改总的系统调用数，而现在只需要在一个表中添加对应的项即可，总调用数由编译过程自动生成。由于我是x86系统，而且是32位，所以只需要在arch/x86/syscalls/syscall_32.tbl的末尾加入以下两项即可：</p>
+
+<pre>350     i386    copy                    sys_copy
+351     i386    add                     sys_add</pre>
+
+<p>当然前面的350和351是按照你的表加入的，在我加入系统调用的时候最大的系统调用号还只是349，所以我用了350和351号。以上三个文件修改完后两个系统调用就加入了，重新编译及运行之前先试试在旧系统中是否可以使用，使用以下汇编程序：</p>
+
+<pre>.section .data
+num1: .long 55	#copy的源地址
+
+.section .bss
+.lcomm num2, 4	#copy的目的地址
+
+.section .text
+.global _start
+_start:
+        movl $350, %eax	#copy系统调用
+        movl $num1, %ebx	#源地址
+        movl $num2, %ecx	#目的地址
+        int $0x80
+
+        movl $351, %eax #add系统调用
+        movl num2, %ebx	#拷贝后的55
+        movl $22, %ecx	#55加22
+        int $0x80
+
+        movl %eax, %ebx	#将返回值作为退出码
+        movl $1, %eax
+        int $0x80</pre>
+
+<p>一样需要注意的是程序中的350和351是我注册的系统调用号，如果你的系统调用号不同应该换成你的号码，同样使用上面的方法编译链接，运行后使用</p>
+
+<pre>$ echo $?</pre>
+
+<p>查看退出码，可以看到并非想要的77，因为在旧内核中并没有350和351这样的系统调用。</p>
+
+<h2 id="编译内核">编译内核</h2>
+
+<p>修改源码后就要编译新内核，如果你从未编译过内核，你需要一个.config文件，直接通过make defconfig生成一个默认的，不过需要注意的是这个默认的不包括几乎所有的驱动，只是让你基本上能用而已，如果还想要驱动就通过make menuconfig自己去找吧，或者你也可以从/boot/里直接拷贝一个.config到当前目录下：</p>
+
+<pre>$ cp /boot/config-version .config</pre>
+
+<p>再编译，不过这样会几乎编译所有驱动，大部分还用不上，而且浪费很长时间编译。</p>
+
+<p>有了.config文件就使用</p>
+
+<pre>$ make -j4</pre>
+
+<p>开始编译，-j4是告诉make使用4个线程编译。之后使用</p>
+
+<pre># make modules_install</pre>
+
+<p>安装模块，注意最后显示的版本号，之后就是安装了</p>
+
+<pre># cp arch/x86/boot/bzImage /boot/vmlinuz-$version
+# cp System.map /boot/System.map-$version
+# cp .config /boot/config-$version
+# mkinitramfs -k -o /boot/initrd.img-$version $version
+# update-grub</pre>
+
+<p>其中命令中的$version需要替换成安装模块后出现的版本号。前三个命令分别拷贝内核，System map和config文件，第四个命令创建一个initrd，最后一个更新grub。都成功后就可以重启再运行前面的汇编程序了，运行后再使用：</p>
+
+<pre>$ echo $?</pre>
+
+<p>得到77就证明系统调用已经好用了。</p>
+
+<h2 id="为什么不实现一个系统调用">为什么不实现一个系统调用</h2>
+
+<p>从上面的步骤也可以看出在内核中加入一个新的系统调用十分简单，但是并不是因为简单就要去做，很多情况下最好别加一个新的系统调用，因为一旦加入一个新的系统调用，你就必须一直维护它，同时系统调用的语义也不能改变。而且删除一个系统调用也不是那么简单，为了保持向后兼容，删除了的系统调用的调用号也不能分配给其他系统调用。所以很多情况下是不到完不得已才添加一个新的系统调用。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2012/09/%e5%85%b3%e4%ba%8elisp%e8%a7%a3%e9%87%8a%e5%99%a8/">关于lisp解释器</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2013/01/%e5%86%85%e6%a0%b8%e7%9a%84%e7%89%a9%e7%90%86%e9%a1%b5%e5%88%86%e9%85%8d%e5%99%a8/">内核的物理页分配器</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2012/11/%e7%bb%99%e5%86%85%e6%a0%b8%e6%b7%bb%e5%8a%a0%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2012/11/%e7%bb%99%e5%86%85%e6%a0%b8%e6%b7%bb%e5%8a%a0%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

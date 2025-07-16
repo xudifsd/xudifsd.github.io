@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Sequential consistency | Xudifsd</title>
+    <meta name="description" content="最近因为各种各样的原因对分布式感兴趣了，其中有一个就是在看w君学校里面分布式系统的课（我们学校竟然不开这个我最想上的课，真是悲哀）。已经看了里面提供的几篇论文还有笔记，觉得确实不错，值得推荐。其中一篇Lamport的论文让我觉得比较新鲜——在没有引入任何物理时钟的情况下定义了分布式系统的全序关系，这种方法应该很适...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2014/11/sequential-consistency/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Sequential consistency</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2014-11-30
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#分布式" title="Category: 分布式" rel="category">分布式</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#distributed-system" title="Tag: distributed-system" rel="tag">distributed-system</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>最近因为各种各样的原因对分布式感兴趣了，其中有一个就是在看w君学校里面分布式系统的<a href="http://courses.cs.washington.edu/courses/cse452/">课</a>（我们学校竟然不开这个我最想上的课，真是悲哀）。已经看了里面提供的几篇论文还有笔记，觉得确实不错，值得推荐。其中一篇Lamport的<a href="http://web.stanford.edu/class/cs240/readings/lamport.pdf">论文</a>让我觉得比较新鲜——在没有引入任何物理时钟的情况下定义了分布式系统的全序关系，这种方法应该很适合分布式系统的调试，因为可以清楚地知道A事件是不是比B事件发生得要早之类的。更让我觉得新鲜的是这种CS论文一半的引用竟然都是物理的相对论。</p>
+
+<p>不过这篇博客要说的并不是那篇论文，而是另一个描述内存一致性的<a href="http://www.hpl.hp.com/techreports/Compaq-DEC/WRL-95-7.pdf">文献</a>，一个分布式系统的课引用多核系统内存一致性的文献这个问题本身也挺有意思，因为它们有些问题在本质上是一个问题。</p>
+
+<h1 id="sequential-consistency">Sequential consistency</h1>
+
+<p>编程在很大程度上都是需要理解下层系统提供了一个什么样的模型或语义，比如Linux的C程序员就需要理解Linux的虚拟内存，Web程序员需要理解HTTP提供的语义。</p>
+
+<p>所以我们就先从模型开始，对于编程最直观的一个模型就是程序是按序执行的，这样上层程序员就能很好地理解程序的行为，但是对于下层的实现来说这种要维持这种模型有两种方法，一是真正这么去做，二是只是维持语义的一致但并不是真正这样做的。不真正地顺序执行就是因为这样对于优化太不友好，一个最简单的例子就是<code class="language-plaintext highlighter-rouge">global = 1; local += 1</code>，其中<code class="language-plaintext highlighter-rouge">global</code>引用的是主存，而<code class="language-plaintext highlighter-rouge">local</code>只是寄存器变量，根据存储层次的<a href="https://gist.github.com/jboner/2841832">效率</a>，第一条指令需要执行100ns，但是第二条指令几乎只需要基本的一个指令周期就能完成。而且更重要的是这两条指令完全没有相互的依赖关系。为什么不并行执行呢？所以一般CPU都部署了一个write buffer，只要将global的值写入buffer就当做这条指令完成，继续执行下条指令即可，之后write buffer再写回主存即可。之后的读如果是和写同样的地址只需要返回write buffer中的值就行，如果不同那必须再次访问主存（可以不等待write真正写入主存，因为它们互相不依赖）。这种优化在单核（非分布式）系统上是满足了Sequential consistency的，但是对于多核（分布式）系统就没满足了，因为编程时不仅仅只是地址相同数据就相关，有时候多个数据多个地址在程序中也是相关的，但是CPU没法看出来，一个实例程序如下：</p>
+
+<p><a href="/blog/statics/2014/11/multithread-example.png"><img class="aligncenter size-full wp-image-341" src="/blog/statics/2014/11/multithread-example.png" alt="multithread-example" width="397" height="145" srcset="/blog/statics/2014/11/multithread-example.png 397w, /blog/statics/2014/11/multithread-example-300x109.png 300w" sizes="(max-width: 397px) 100vw, 397px" /></a></p>
+
+<p>一开始<code class="language-plaintext highlighter-rouge">a</code>和<code class="language-plaintext highlighter-rouge">b</code>的值都是0，如果CPU都是按顺序执行没有上面的优化，那么只可能有一个线程进入临界区，但是如果有优化就有可能发生两个线程都进入或者都没进入临界区的情况。</p>
+
+<p>所以只要下层支持Sequential consistency这样的模型，就不会让上面的程序出错。虽然这种模型简单，但是对于性能确实不友好，因为大部分情况下不同的变量确实不互相依赖，只有少数的情况依赖，所以一般的CPU并不支持这种模型，而支持更加宽松的模型，然后提供一个<a href="https://zh.wikipedia.org/wiki/%E5%86%85%E5%AD%98%E5%B1%8F%E9%9A%9C">内存栅栏</a>的机制支持上面程序的语义，对于那些宽松的模型的讨论直接看那个内存一致性的文献，这里就不讨论了。</p>
+
+<h1 id="实现">实现</h1>
+
+<p>文献中提到要实现这种编程模型只需要支持下面两点就行：</p>
+
+<ol>
+  <li>处理器必须保证后一个内存访问必须在前一个内存访问结束后才能进行，而且对于有cache的系统，写操作必须向其他cache发送invalidate或update消息，而且直到收到所有的确认才算真正完成写操作。文献中把这叫program order requirement。</li>
+  <li>这个要求只是有cache的系统才需要满足。它要求对于同一个地址的写必须序列化，而且对这个地址的读必须要等写操作产生的invalidate或update消息都被确认了才能返回。文献中把这叫做write atomicity requirement。</li>
+</ol>
+
+<p><a href="https://static.googleusercontent.com/media/research.google.com/zh-CN/us/archive/chubby-osdi06.pdf">chubby论文</a>中描述的cache就是满足这样的模型的，因为这样的模型更加易于理解和使用。而且chubby的定位并不是高性能而是强调可靠和可用性，所以使用这样的模型也是有道理的。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/08/lease-activating/">Lease Activating
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/06/chubby-zookeeper-different-consistency-level/">chubby & zookeeper: different consistency level
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2014/10/%e9%80%bb%e8%be%91%e7%bc%96%e7%a8%8b%e5%8f%8a%e5%ba%94%e7%94%a8/">逻辑编程及应用</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2014/12/macro/">Macro</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2014/11/sequential-consistency/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2014/11/sequential-consistency/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

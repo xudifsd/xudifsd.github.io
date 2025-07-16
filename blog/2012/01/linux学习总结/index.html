@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Linux学习总结 | Xudifsd</title>
+    <meta name="description" content="总是有些同学会问我一些Linux的问题，而且很多情况还要教实验室低年级的同学，但是授之以鱼不如授之以渔，所以总结一下我学Linux的经验，也方便别人查看。学习Linux的好处我总是觉得自己很幸运，因为我接触的第一个和计算机学科有关的就是Linux，在这之前从来没有接触过编程等东西，只是用电脑玩游戏而已。因此之后所...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2012/01/linux%e5%ad%a6%e4%b9%a0%e6%80%bb%e7%bb%93/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Linux学习总结</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2012-01-05
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Linux" title="Category: Linux" rel="category">Linux</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#linux" title="Tag: linux" rel="tag">linux</a>&nbsp;
+    
+        <a href="/blog/tag/#总结" title="Tag: 总结" rel="tag">总结</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>总是有些同学会问我一些Linux的问题，而且很多情况还要教实验室低年级的同学，但是授之以鱼不如授之以渔，所以总结一下我学Linux的经验，也方便别人查看。</p>
+
+<h2 id="学习linux的好处">学习Linux的好处</h2>
+
+<p>我总是觉得自己很幸运，因为我接触的第一个和计算机学科有关的就是Linux，在这之前从来没有接触过编程等东西，只是用电脑玩游戏而已。因此之后所有的计算机学习全是在Linux之下，包括编程，包括系统管理。为什么这样是幸运呢？我觉得主要有这些原因：</p>
+
+<ol>
+  <li>Windows并不适合学习编程。</li>
+  <li>几乎所有的服务器都是使用Linux系统，这样一直使用Linux省去了还要学习的麻烦。</li>
+  <li>很多优秀的开源的软件都是最先支持Linux系统，之后再移植到各个平台上，而学习和使用这些软件可以很好地了解一些最新的技术，相反在Windows下就没有这么多的机会接触这些东西。</li>
+</ol>
+
+<p>说明一下第一点：虽然国内的一些技术书籍都是以Windows为平台，但是看了<a href="http://book.douban.com/review/3773373/">这</a>个讽刺你应该能了解一些吧。我觉得主要原因就是Windows下没有一个好的编辑器和编译器（虽然有好的IDE）。我强烈的觉得要想真正了解如何编程就必须了解程序如何编译和执行，而编辑器和编译器的分离可以强迫人们去了解这些，与这个分离策略相反的就是集成的开发环境，像VC++6.0，Eclipse，NetBeans，这些工具使用起来都是非常方便的，适合于进行正经的开发，但却不适合初学者，如果给刚接触编程的人装上这些IDE后让他们学习使用，他们肯定都能很快学会，因为只需要打上源代码，按下IDE上的编译、运行键就可以了，但是这样他们不知道程序到底怎么产生。上次就有个同学问我NetBeans怎么连接数据库啊？当时跟他解释半天不是NetBeans连接数据库而是Java连接而已。但是如果你在Linux中使用vim或emacs编辑再用gcc或者javac编译，那么你很容易就能知道编译的过程。通过知道这些细节可以了解程序如何运行，也能更好地理解程序的一些行为了，从而更好地学习编程。</p>
+
+<p>第二点：一般的用户完全不知道Linux是什么，因为Windows占85%以上的市场，在中国90%以上，而Linux只占1%，在中国就更少了，这些是桌面用户的统计，但是服务器方面完全相反，在<a href="http://www.top500.org/lists/2011/11">Top500</a>中使用Windows的系统也就一两台，其他的都是Unix系的，一般来说服务器都是使用Linux系统，为什么要在去管理服务器时再学Linux呢？直接把Linux作为主力操作系统完全可行，甚至连玩魔兽争霸都可以直接在Linux下用wine模拟。这样在日常使用中就可以学会Linux的系统维护，而不用再临时学习了。</p>
+
+<p>第三点：如果你看过<a href="http://github.com">github</a>上的一些项目，很多项目都是支持直接在Linux上从源码进行安装，但是很少有项目都提供Windows的exe安装包，而直接从源码安装又会出现很多兼容性问题，甚至根本无法安装。就因为这一点，在Linux下可以尝试很多最新的开源软件，但是Windows绝对没有这么方便。一旦缺少这个条件你会错过很多好的学习机会。</p>
+
+<h2 id="shell">Shell</h2>
+
+<p>Shell是Linux最重要的东西，<del>在图形界面下一般叫做终端或者模拟终端，</del>（回复指出了shell和terminal的区别，不过我的本意是指图形界面下叫做terminal这个名字的软件，它是个模拟终端，如果不去深究那么也可以叫它shell，不过真正的shell在现代的Linux系统也有，在Ubunut下可以使用Ctrl+Alt+F[1..7]转换，F7就是图行界面，通过ssh也可以直接连接远程shell），这个和Windows的cmd.exe很像，但是比cmd.exe要强大得多，很多Linux的工作都需要shell来完成，能够熟练使用shell可以说是非常重要的Linux技巧，这些技巧包括用管道连接各种小工具的输入输出，查询命令的参数，命令补齐，shell脚本编程等，举个例子吧，下面的代码是个shell脚本，总共不超过10行代码，它是干什么的呢？</p>
+
+<pre>#!/bin/bash
+tr -cs A-Za-z\' '\n' |
+	tr A-Z a-z |
+	sort |
+	uniq -c |
+	sort -k1,1nr -k2|
+	head -n 10</pre>
+
+<p>这个脚本只使用了最基本的Linux命令再加上管道实现了词频统计，输出出现次数最多的10个单词，而且速度也相当快，如果使用C语言想要这么快就必须自己实现一个能快速插入的数据结构，如果用高级点的语言如python又要非常了解库函数才能实现。所以shell脚本使用管道加上重定向可以非常快速地实现一些功能。甚至在<a href="http://git-scm.com/">git</a>的早期开发中对于一些高级的功能如add，commit等都是使用shell脚本来调用C语言实现的命令来实现的，之后出于效率和可移植性的考虑才将这些shell实现用C语言重写。这个例子的意思就是：如果你能熟练掌握shell脚本，重定向，管道以及一些基本的命令就能实现很多功能，这些功能对于系统管理已经非常足够了，加上一些其他编程语言甚至还能做出一些软件的原型。</p>
+
+<h2 id="软件的安装">软件的安装</h2>
+
+<p>Linux安装软件和Windows完全不同，通常在Windows下找一个软件要自己上网搜索，找到华军等下载站，跳过一大堆广告，忍受一大堆弹窗广告，在广告群中找到不起眼的下载链接再下载安装，安装时还要注意不要安装附带的垃圾流氓软件，在Windows下安装软件就是这么麻烦。在Linux下如何呢？假设我要在Ubuntu下安装git软件，那么一条命令足已：</p>
+
+<pre>sudo apt-get install git</pre>
+
+<p>在Linux下只要知道软件名就可以直接用命令安装，所有下载安装过程全部全自动。而搜索软件呢？如果你不知道软件名，那么你到Google上搜索你要的功能，之后加个“Linux”就行，比如你要找个将rm视频格式转换成其他格式的软件，那么只要在Google搜索“视频转码 Linux”就行，只要找到软件的名字和软件使用时的参数就行。</p>
+
+<p>Linux软件安装这么方便就是因为Linux的一些发行版本有很强大的包管理软件。Linux可以使用的软件成千上万，如果都从源代码安装会耗费很多的编译时间，并且每个软件的编译、安装方法都不一样，包管理软件就是为了解决这个问题而存在的。Linux的发行版本有两种包管理方式，一种是Debian系统及衍生系统（Ubuntu等）使用的apt系统，另一种是红帽公司出的系统（RedHat，Fedora等）使用yum。具体的用法就不介绍了。</p>
+
+<h2 id="posix标准"><a href="http://en.wikipedia.org/wiki/POSIX">POSIX</a>标准</h2>
+
+<p>POSIX标准的全称是Portable Operating System Interface，为什么这个标准重要呢？因为它规定了操作系统的系统调用的接口，其他任何软件能做的事情都不可能超过这个标准规定的接口所能做的事情，换句话说，这个标准几乎是规定了编程的能力，任何软件都不可能超过这个能力，因为软件都是运行在内核之上的。不过这个标准的本意并不是为了规定编程能力的边界，而是为了让所有的操作系统的内核都提供相应的接口，好让应用软件能够比较好的相互移植。在Linux下常常使用C编程就会非常熟练的使用这个标准规定的接口，就算是一些高级语言也都会提供这样类似的接口，它们也都是用这个接口来实现多进程，IO和进程间通信等功能。在Windows下用高级语言编程还好，能够接触到这些东西，但是用C恐怕根本接触不到这个标准，这样也丧失了可移植性。如果你编写的软件非常符合这个标准那么你的软件就能比较方便地移植到其他平台上。</p>
+
+<h2 id="书籍">书籍</h2>
+
+<p>说了这么多，还是那句话，授之以鱼不如授之以渔。自己看书学习比读别人博客吃别人嚼碎了的东西更有营养。这里列出我学Linux时看的一些书，希望对你们有用。</p>
+
+<table border="1">
+  <tr>
+    <td>
+      <a href="http://Linuxcommand.org/tlcl.php">The Linux Command Line</a>
+    </td>
+    
+    <td>
+      这本书非常适合初学Linux命令行的人看，由著名的 LinuxCommand.org网站的维护者编写，非常详细地介绍了Linux的命令行。
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="http://book.douban.com/subject/2208530/">鸟哥的Linux私房菜 基础学习篇</a>
+    </td>
+    
+    <td>
+      这是我看的第一本计算机相关书籍，在看这本书之前几乎不懂电脑，所以这本书一定非常适合Linux初学者，但是不像《The Linux Command Line》，它几乎介绍了所有的Linux相关主题，而不仅仅只是命令行。
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="http://tldp.org/LDP/abs/html/index.html">Advanced Bash-Scripting Guide</a>
+    </td>
+    
+    <td>
+      这本书更加详细地介绍了shell脚本，而不像《The Linux Command Line》只是简单介绍，里面也有很多的技巧，但是这本书很多都只是举例，分析，没什么系统性，所以读起来比较吃力，不过可以当查询的好去处。
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="http://book.douban.com/subject/1788421/">UNIX环境高级编程</a>
+    </td>
+    
+    <td>
+      这本书非常详细地介绍了UNIX系各个实现（BSD，Linux，Solaris）之间的差别，并且介绍了实现的原理以及POSIX标准，可以非常好地理解C语言系统调用的作用。
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="http://book.douban.com/subject/4292217/">The Linux Programming Interface</a>
+    </td>
+    
+    <td>
+      这本书和《UNIX环境高级编程》很像，只是更专注于Linux系统。
+    </td>
+  </tr>
+  
+  <tr>
+    <td>
+      <a href="http://book.douban.com/subject/1231236/">Linux内核完全注释</a>
+    </td>
+    
+    <td>
+      这本书以早期内核版本作为标本，对几乎所有的内核代码都有注释，而且有非常详细的解释，如果你想了解内核实现的原理，这本书就适合你。
+    </td>
+  </tr>
+</table>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/12/sicp%e7%bb%83%e4%b9%a0%e9%a2%981-45%e2%80%94%e2%80%94%e6%b1%82n%e6%ac%a1%e6%96%b9%e6%a0%b9/">SICP练习题1.45——求n次方根</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2012/01/%e7%a8%8b%e5%ba%8f%e7%9a%84%e9%80%80%e5%87%ba%e7%a0%81/">程序的退出码</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2012/01/linux%e5%ad%a6%e4%b9%a0%e6%80%bb%e7%bb%93/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2012/01/linux%e5%ad%a6%e4%b9%a0%e6%80%bb%e7%bb%93/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

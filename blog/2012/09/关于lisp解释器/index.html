@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>关于lisp解释器 | Xudifsd</title>
+    <meta name="description" content="在上个月重新看了《SICP》第四章后觉得写个lisp解释器也不是很困难，甚至我发现只要理解了其中的原理整个解释器其实非常简单。我觉得书中理解原理的关键一段就在4.1节：  The metacircular evaluator is essentially a Scheme formulation of the e...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2012/09/%e5%85%b3%e4%ba%8elisp%e8%a7%a3%e9%87%8a%e5%99%a8/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>关于lisp解释器</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2012-09-28
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>在上个月重新看了《SICP》第四章后觉得写个lisp解释器也不是很困难，甚至我发现只要理解了其中的原理整个解释器其实非常简单。我觉得书中理解原理的关键一段就在<a href="http://mitpress.mit.edu/sicp/full-text/book/book-Z-H-26.html">4.1节</a>：</p>
+
+<blockquote>
+  <p>The metacircular evaluator is essentially a Scheme formulation of the environment model of evaluation described in section 3.2. Recall that the model has two basic parts:</p>
+
+  <ol>
+    <li>
+      <p>To evaluate a combination (a compound expression other than a special form), evaluate the subexpressions and then apply the value of the operator subexpression to the values of the operand subexpressions.</p>
+    </li>
+    <li>
+      <p>To apply a compound procedure to a set of arguments, evaluate the body of the procedure in a new environment. To construct this environment, extend the environment part of the procedure object by a frame in which the formal parameters of the procedure are bound to the arguments to which the procedure is applied.</p>
+    </li>
+  </ol>
+
+  <p>These two rules describe the essence of the evaluation process, a basic cycle in which expressions to be evaluated in environments are reduced to procedures to be applied to arguments, which in turn are reduced to new expressions to be evaluated in new environments, and so on, until we get down to symbols, whose values are looked up in the environment, and to primitive procedures, which are applied directly.</p>
+</blockquote>
+
+<p>也就是说eval和apply是相互递归的，eval会调用apply去产生结果，而apply会调用eval解释整个程序的子句。</p>
+
+<p>apply的基本作用就是在调用函数之前创造出一个环境帧，这个帧中包含解析函数子句所必需的变量绑定，而被apply调用的eval会在这个新的环境中解析函数子句。</p>
+
+<p>而eval则是负责在环境中查找符号的绑定，根据表达式中的第一个符号的内容（也就是表达式的operator），来决定下一步行动，如果是普通函数则调用apply，如果是宏则调用macroexpand，宏扩展之后再调用eval去解析扩展后的表达式。这样说可能有些难以理解，具体可以看我以前写的一篇关于lisp环境帧的<a href="/blog/2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/">文章</a>。在理解了这个原理之后再看SICP的<a href="http://mitpress.mit.edu/sicp/full-text/book/ch4-Z-G-1.gif">图</a>就好理解了。</p>
+
+<p>总的来说，整个解释器也就这些东西了。而且由于lisp基本上都内置了read函数直接返回读到的表达式，而且由于表达式就是列表，所以用lisp来解释lisp简直没什么技术含量，所以我也就花了几天时间就写出了个<a href="https://github.com/xudifsd/si/tree/scheme-version">lisp解释器</a>。我实现的基本上是scheme的函数，并且支持call/cc，不过宏却是CL类的宏，因为scheme的宏虽然干净但是感觉还是<a href="http://www.douban.com/note/185047318/">太难用</a>了，还是觉得defmacro用起来舒服，所以我也就只实现了defmacro宏。</p>
+
+<h2 id="关于lisp解释器">关于lisp解释器</h2>
+
+<p>虽然lisp版的解释器已经实现了，但是完成后却发现没什么技术含量，不过由于使用高阶语言完成了一个项目，那么整体的思路也已经掌握，所以我还是想用C实现一个解释器，这样一想其实会多很多工作量：内存管理，垃圾收集，符号查找，链表的读入等这些在lisp实现中完全不需要考虑的细节全部冒出水面了。</p>
+
+<p>不过即使是使用高阶语言来实现我也发现自己对难度的判断有些错误（看来别人说的“<a href="http://www.aqee.net/why-programmers-are-bad-at-estimating-times/">要把程序员估计的困难提高几个数量级才能得出正确值</a>”是对的）：本来以为call/cc实现起来非常困难，但是实际上直接使用原生的call/cc就能非常轻松地把这个功能提供给使用者。就算是使用C实现起来也不会困难，只是一个setjmp和一个longjmp而已，但是实现之前想做的的干净宏却异常困难，最后不得以，只能拿CL的defmacro（由于没有支持gensym，所以一些高级宏没办法支持）的语义来充数了。</p>
+
+<p>如果有人对lisp实现感兴趣以下是一些提示：</p>
+
+<p>这个解释器所支持的语法虽然混合了CL的和scheme，但是只能由scheme解释器当宿主解释器。推荐使用<a href="http://call-cc.org/">chicken scheme</a>，因为我用的就是这个，使用时直接用csi main.scm就能进入<a href="http://en.wikipedia.org/wiki/Read%E2%80%93eval%E2%80%93print_loop">repl</a>，现在支持的一些函数和基本语法见eval.scm和setup.scm，其中setup.scm中直接导入了宿主解释器的基本函数，还定义了<a href="https://github.com/xudifsd/si/blob/9abccc905c9a0120b579d6083657f98044d10f67/setup.scm#L90">let和cond宏</a>，这样你也可以照着写一个由scheme来解释的CL宏（个人觉得好帅）。</p>
+
+<h2 id="关于c实现的lisp解释器">关于C实现的lisp解释器</h2>
+
+<p>基本功能已经在lisp实现中实现了。但是我仍然想用C来解释lisp，这样更有挑战性也更有意思。准备实现的基本解释器其实应该算是个库，它提供接口让所有链接到该库的软件可以直接解释lisp，这个接口应该包括：</p>
+
+<ul>
+  <li>允许让用户自己加入primitive procedure：比如库本身不提供打开文件的接口，但是应该允许用户自己拿C语言实现这个函数，并能将其加入到环境中就好像库本身提供一样，这样用户可以自己扩展该库而不需要改变库。</li>
+  <li>提供类似eval-string的C语言接口，让用户可以eval外部提供的lisp语言。从这个意义上来说：repl本身就是该库的一个thin wrapper。</li>
+</ul>
+
+<p>希望最终能完成这个项目，现在还有很多的困难需要克服，最大的困难就是garbage collection，实在不知道应该怎么解决这个问题，还需要调查很久，而且一旦这个地方出现bug将会非常难找到。而性能问题也将是一个头痛的问题，因为从来没写过一个性能需求很高的软件，很多次的优化最终常常被证明还不如不优化。所以，成品估计也只能当作是一个勉强能用的东西吧。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2012/08/%e4%bb%8einfo%e5%9f%9f%e5%90%8d%e6%8d%a2%e8%87%b3org%e5%9f%9f%e5%90%8d/">从info域名换至org域名</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2012/11/%e7%bb%99%e5%86%85%e6%a0%b8%e6%b7%bb%e5%8a%a0%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8/">给内核添加系统调用</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2012/09/%e5%85%b3%e4%ba%8elisp%e8%a7%a3%e9%87%8a%e5%99%a8/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2012/09/%e5%85%b3%e4%ba%8elisp%e8%a7%a3%e9%87%8a%e5%99%a8/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

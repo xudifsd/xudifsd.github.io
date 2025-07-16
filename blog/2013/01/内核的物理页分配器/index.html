@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>内核的物理页分配器 | Xudifsd</title>
+    <meta name="description" content="**注意，本文主要内容来自《Understanding the Linux Virtual Memory Manager》，基于2.4内核，和最新内核有所不同。并且本人是内核新手，请轻拍。**伙伴系统的结构和水位linux内核使用伙伴系统来分配内存页，分配内存的API是alloc_pages()，但是主函数是__...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2013/01/%e5%86%85%e6%a0%b8%e7%9a%84%e7%89%a9%e7%90%86%e9%a1%b5%e5%88%86%e9%85%8d%e5%99%a8/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>内核的物理页分配器</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2013-01-17
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Linux" title="Category: Linux" rel="category">Linux</a>&nbsp;
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>&nbsp;
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#kernel" title="Tag: kernel" rel="tag">kernel</a>&nbsp;
+    
+        <a href="/blog/tag/#linux" title="Tag: linux" rel="tag">linux</a>&nbsp;
+    
+        <a href="/blog/tag/#mm" title="Tag: mm" rel="tag">mm</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p><strong>**注意，本文主要内容来自《<a href="http://book.douban.com/subject/1610233/">Understanding the Linux Virtual Memory Manager</a>》，基于2.4内核，和最新内核有所不同。并且本人是内核新手，请轻拍。</strong>**</p>
+
+<h2 id="伙伴系统的结构和水位">伙伴系统的结构和水位</h2>
+
+<p>linux内核使用伙伴系统来分配内存页，分配内存的API是alloc_pages()，但是主函数是__alloc_pages()，这个函数分为三个部分：</p>
+
+<ol>
+  <li>看是否能在不达到zone-&gt;pages_low水位的情况下满足分配要求，如能则直接分配。</li>
+  <li>否则zone需要balance，唤醒kswapd，并看能否在不达到zone-&gt;pages_min水位的情况下满足分配要求，如能则分配。</li>
+  <li>否则进入slow path，先看自己是否是即将被OOM killer杀掉的进程，如是则不管水位直接分配，否则自己同步地做kswapd该做的事。</li>
+</ol>
+
+<p>每个zone都有三个水位线：pages_min，pages_low，pages_high，这三个水位线用于描述系统的内存压力大小的，当zone内空闲页的数目达到pages_low时__alloc_pages()会唤醒kswapd进程，当到了pages_min时__alloc_pages()也会自己干kswapd该干的活，也就是同步的kswapd，直到空闲页数目达到pages_high。</p>
+
+<p>不过，物理页分配器最难理解的就是伙伴系统的结构和操作过程了。伙伴系统使用下面的结构体的数组描述空闲页：</p>
+
+<pre lang="C">typedef struct free_area_struct {
+        struct list_head free_list;
+        unsigned long *map;
+} free_area_t;</pre>
+
+<p>由于伙伴系统的最基本单位是页，而且只能分配2<sup>order</sup>页数的连续内存块，所以order就作为结构体数组的索引，结构体中的free_list链接的是连续内存块中的第一个struct page，而map则是表示页是否分配的位图。</p>
+
+<p>需要注意的是内核用一种比较特殊的方式操作位图：<strong>**只用1位了表示两个伙伴的状态，即每分配或释放一个伙伴就会对相应的位取反。所以0表示两个伙伴都可用或都不可用，1表示有一个可用</strong>**。内核使用下面宏来操作位图：</p>
+
+<pre lang="‘C’">#define MARK_USED(index, order, area) \
+		__change_bit((index) &gt;&gt; (1 + (order)), (area)-&gt;map)</pre>
+
+<p>注意其中的1，就是因为内核使用1位表示两个伙伴的状态，才会有中间的1。其中index是struct page在全局mem_map中的索引，area即是struct free_area_struct。</p>
+
+<h2 id="分配内存">分配内存</h2>
+
+<p>考虑一个有16页的系统，如果一开始都是空闲那么free_area数组应该如下图，其中我用page表示结构体中的free_list，page的值就是相应struct page在全局mem_map中的偏移：</p>
+
+<div id="attachment_209" style="width: 283px" class="wp-caption aligncenter">
+  <a href="/blog/statics/2013/01/1.png" rel="attachment wp-att-209"><img aria-describedby="caption-attachment-209" class="size-full wp-image-209" alt="free_area初始状态" src="/blog/statics/2013/01/1.png" width="273" height="249" /></a>
+  
+  <p id="caption-attachment-209" class="wp-caption-text">
+    free_area初始状态
+  </p>
+</div>
+
+<p>其中order为4的page有个0表示mem_map的0偏移开始的2<sup>4</sup>页都是空闲，其他page为NULL表示没有对应order大小的空闲页，而由于总共才16（2<sup>4</sup>）页，所以order 4没有伙伴，而内核用位图的1位来描述伙伴，所以order为4的map为NULL，而3有一位，以此类推。</p>
+
+<p>假设现在需要分配order为2的连续内存块，先在free_area[2]中找，由于order为2的page为NULL，即表示没有order 2的连续空间，这样就要往order更高的地方找，3中也没有，只有4中有，这样就要进行分裂，将分裂出来的前一个伙伴放在order为3的page中，而后一个伙伴继续分裂一直到得到想要的order，本例中就是2，所以分配完这次order 2和3都会有一个空闲的块，如下图：</p>
+
+<div id="attachment_210" style="width: 283px" class="wp-caption aligncenter">
+  <a href="/blog/statics/2013/01/2.png" rel="attachment wp-att-210"><img aria-describedby="caption-attachment-210" class="size-full wp-image-210" alt="分配内存块后的free_area状态" src="/blog/statics/2013/01/2.png" width="273" height="258" /></a>
+  
+  <p id="caption-attachment-210" class="wp-caption-text">
+    分配内存块后的free_area状态
+  </p>
+</div>
+
+<p>现在的物理页应该有最后4页被占用，前面12页仍然空闲，上面的结构页表示正确（order为2的page有8表示从第8～11页为空闲，而12～15页已经被分配）。</p>
+
+<h2 id="释放内存">释放内存</h2>
+
+<p>再看看释放的过程，内存块使用者必须记得所使用内存块的order，因为在释放时需要用到，这也是伙伴系统不方便的地方，分配的API是alloc_pages()而释放的API是\<em>_free_pages()，它的主要函数是\</em>_free_pages_ok()，由其做主要的释放工作：检查刚释放的内存块是否能与相应伙伴合并，这只要通过查看相应的位图是否为1即可完成，如果能合并，那么合并后会往更高的order里添加空闲页，并继续查看是否能此合并，直到MAX_ORDER，这个常数常常是10。本例合并后又变成原来的状态了。</p>
+
+<h2 id="碎片">碎片</h2>
+
+<p>碎片分为两种：</p>
+
+<ul>
+  <li>外部碎片是无法满足大的分配要求，因为只存在小的内存块。</li>
+  <li>内部碎片是对于小的请求也只能分配大的内存块。</li>
+</ul>
+
+<p>Linux的外部碎片问题并不严重，因为大的请求可以通过vmalloc()分配一个物理地址上不连续但是虚拟地址上连续的内存块。只是伙伴系统的内部碎片问题非常严重，因为伙伴系统的最小单位是页，这个单位对于直接分配结构体太大，所以内核还使用了slab分配器来解决这个问题。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2012/11/%e7%bb%99%e5%86%85%e6%a0%b8%e6%b7%bb%e5%8a%a0%e7%b3%bb%e7%bb%9f%e8%b0%83%e7%94%a8/">给内核添加系统调用</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2013/03/%e4%b8%a4%e7%a7%8d%e5%9f%ba%e6%9c%ac%e7%9a%84gc%e6%96%b9%e6%b3%95%e5%92%8c%e4%bb%96%e4%bb%ac%e7%9a%84%e5%85%b3%e7%b3%bb/">两种基本的GC方法和他们的关系</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2013/01/%e5%86%85%e6%a0%b8%e7%9a%84%e7%89%a9%e7%90%86%e9%a1%b5%e5%88%86%e9%85%8d%e5%99%a8/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2013/01/%e5%86%85%e6%a0%b8%e7%9a%84%e7%89%a9%e7%90%86%e9%a1%b5%e5%88%86%e9%85%8d%e5%99%a8/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

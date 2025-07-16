@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Make a predictable whole out of unpredictable parts | Xudifsd</title>
+    <meta name="description" content="Recently, I read many papers &amp; articles about latency, especially tail latency, so this post is served as my notes on my reading.Latency is a very import...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2015/08/make-a-predictable-whole-out-of-unpredictable-parts/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Make a predictable whole out of unpredictable parts</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2015-08-08
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#分布式" title="Category: 分布式" rel="category">分布式</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#distributed-system" title="Tag: distributed-system" rel="tag">distributed-system</a>&nbsp;
+    
+        <a href="/blog/tag/#latency" title="Tag: latency" rel="tag">latency</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>Recently, I read many papers &amp; articles about latency, especially tail latency, so this post is served as my notes on my reading.</p>
+
+<p>Latency is a very important metric for a system, because it affects user experience a <strong>lot</strong>. In distributed system, tail latency is much more important than in single node system. This is based on a simple observation:</p>
+
+<blockquote>
+  <p>if you have components that 1% of requests exhibit high latency, and if request from client have to touch 100 components in a distributed system, then you’ll have 64% of client requests exhibit high latency. That’s awful user experience. This is a fundamental property of scaling systems: you need to worry not just about latency, but tail latency. High performance equals high tolerances. At scale you can’t ignore tail latency.</p>
+</blockquote>
+
+<p>From this <a href="http://highscalability.com/blog/2012/3/12/google-taming-the-long-latency-tail-when-more-machines-equal.html">article</a>, we can know that latency can arise from many sources, from hardware to software. It also links to interesting discussion on TCP vs SPDY.</p>
+
+<p>Authors of another <a href="https://web.archive.org/web/20100618095751/http:/nsg.cs.princeton.edu/publication/latency_sigm_04_update.pdf">paper</a> discussed their effort on tuning web server software, they found out that head-of-line blocking in kernel queue has great impact on latency. This kind of blocking is sometime helpful for throughput on disk write, but can severely degrades latency. Also, if you have blocking invocation in an event loop, it will also causes head-of-line blocking, and will makes tail latency higher, by removing blocking invocation out of event loop, we can solve this kind of problem.</p>
+
+<p>Another <a href="https://engineering.linkedin.com/performance/who-moved-my-99th-percentile-latency">article</a> from linkedin discussed how they solve high tail latency by installing another net card to serve specific network request.</p>
+
+<p>Two examples above show how difficult it is to identify the source of latency. As always, optimization requires a lot of insight on how system works.</p>
+
+<p>Another interesting <a href="https://www.usenix.org/system/files/conference/hotos15/hotos15-paper-maas.pdf">paper</a> proposed a runtime coordination system that coordinate GC in distributed system written in GC language. GC usually causes hiccup for system, especially major collection. This paper shows that minor GC have little impact on batch workload like Spark, but will affect real-time application significantly, GC is a key contributor to stragglers in many interactive system. By deploying coordinate system, PageRank computation on Spark completed 15% faster, 99.9% tail update latency on Cassandra is improved from 3.3ms to 1.6ms, the worst case from 83ms to 19ms, which is quite impressive.</p>
+
+<p>High tail latency is not only caused by GC, head-of-line blocking etc, it’s prevalent. This <a href="https://users.ece.cmu.edu/~tdumitra/public_documents/dumitras09magical1prct_tdsc_submitted.pdf">paper</a> shows that 1% tail latency is unpredictable no matter what config, programming language or OS is. After removing 1% tail latency from statistic, the server’s behavior is predictable. So that, many systems could focusing on provide QoS guarantees for statistical measures such as 99th latency percentile.</p>
+
+<p>Ok, enough talk about background, let’s read some really awesome stuff.</p>
+
+<p>Jeff Dean gives a <a href="https://www.youtube.com/watch?v=C_PxVdQmfpk">talk</a> about tail latency in 2013. Here is the <a href="https://static.googleusercontent.com/media/research.google.com/zh-CN//people/jeff/Berkeley-Latency-Mar2012.pdf">slide</a> and <a href="http://cacm.acm.org/magazines/2013/2/160173-the-tail-at-scale/fulltext">summary article</a>. Instead of trying to identify the source of latency &amp; eliminate it, he tries to live with it. The talk gives some general techniques to cut the tail, like: hedged requests, tied requests, micro-partitions, selective replication and latency-induced probation. These techniques is general enough to applied to many scenarios.</p>
+
+<p>The talk compared faults tolerance and variability tolerance. To tolerate variability, one has to:</p>
+
+<blockquote>
+  <p>make a predictable whole out of unpredictable parts</p>
+</blockquote>
+
+<p>and this is where the title of this post came from. It’s very similar to:</p>
+
+<blockquote>
+  <p>make a reliable whole out of unreliable parts</p>
+</blockquote>
+
+<p>which is the key point of distributed system. And since latency is more and more important as a metric, predictable latency should also be more and more important. I think this is the direction that <a href="http://highscalability.com/blog/2011/8/29/the-three-ages-of-google-batch-warehouse-instant.html">next age</a> distributed system should heading.</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/08/lease-activating/">Lease Activating
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/06/chubby-zookeeper-different-consistency-level/">chubby & zookeeper: different consistency level
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2015/07/cope-with-high-latency-caused-by-fork2/">Cope with high latency caused by fork(2)</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2015/08/make-a-predictable-whole-out-of-unpredictable-parts/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2015/08/make-a-predictable-whole-out-of-unpredictable-parts/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

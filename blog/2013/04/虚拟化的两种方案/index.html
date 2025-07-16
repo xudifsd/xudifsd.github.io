@@ -1,0 +1,571 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>虚拟化的两种方案 | Xudifsd</title>
+    <meta name="description" content="虚拟化是云计算催生的技术之一，它的目的就是让运行在其上的应用程序觉得自己独占所有的资源。与当年的虚拟内存的出现的原因一样：在出现虚拟内存之前，所有的进程都能知道本机上还有哪些其他的进程，需要注意不要踩到别的进程。但是出现虚拟内存之后所有进程都觉得自己独占了4G内存（32位机器）。而现在的虚拟化技术只是将这个虚拟范...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2013/04/%e8%99%9a%e6%8b%9f%e5%8c%96%e7%9a%84%e4%b8%a4%e7%a7%8d%e6%96%b9%e6%a1%88/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>虚拟化的两种方案</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2013-04-03
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Linux" title="Category: Linux" rel="category">Linux</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#kernel" title="Tag: kernel" rel="tag">kernel</a>&nbsp;
+    
+        <a href="/blog/tag/#linux" title="Tag: linux" rel="tag">linux</a>&nbsp;
+    
+        <a href="/blog/tag/#virtualization" title="Tag: virtualization" rel="tag">virtualization</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>虚拟化是云计算催生的技术之一，它的目的就是让运行在其上的应用程序觉得自己独占所有的资源。与当年的虚拟内存的出现的原因一样：在出现虚拟内存之前，所有的进程都能知道本机上还有哪些其他的进程，需要注意不要踩到别的进程。但是出现虚拟内存之后所有进程都觉得自己独占了4G内存（32位机器）。而现在的虚拟化技术只是将这个虚拟范围扩展了而已（扩展到了文件系统，进程和设备领域）。</p>
+
+<p>解释现在正在进行的虚拟化潮流的入门概念最清楚的就是<a href="http://lwn.net/Articles/524952/">这篇文章</a>了，它将虚拟化的两种方案做了比较，并且指出现在正在进行的Container虚拟化的缘由。</p>
+
+<h2 id="虚拟化的目标">虚拟化的目标</h2>
+
+<p>简单来说虚拟化的目标就是这两个：</p>
+
+<ul>
+  <li>资源控制和隔离</li>
+  <li>名字空间的隔离</li>
+</ul>
+
+<p>所谓的资源控制就是记录用户（这个用户不是指人类，而是指进程或进程组，之后也使用这个概念）消耗了多少资源，并给与每个用户<strong>一定</strong>的，而<strong>不是</strong>无限制的资源。而隔离则将虚拟化进行地更加彻底：防止一个用户的资源需求影响到其他用户的资源需求（例如在内存资源欠缺的系统中，一个进程的的内存需求可能会将另一个进程的内存页swap到外存而减缓其完成速度）。</p>
+
+<p>名字空间的隔离就是允许在同一个硬件上的不同用户看到不同的UNIX资源（进程号或网络接口等），例如一个名字空间的进程号和另一个名字空间的进程号指的不是同一个进程，这样这两个名字空间就不会相互影响，因此也就让作业觉得自己独占了所有资源。</p>
+
+<h2 id="虚拟化的两种实现">虚拟化的两种实现</h2>
+
+<p>虚拟化有两种实现，如果你只是想要了解如何进行选择，可以看<a href="https://www.linux.com/news/technology-feature/virtualization/300057-containers-vs-hypervisors-choosing-the-best-virtualization-technology-">这篇文章</a>。</p>
+
+<h3 id="hypervisor"><a href="http://en.wikipedia.org/wiki/Hypervisor">Hypervisor</a></h3>
+
+<p>Hypervisor就是在操作系统上再运行一个或多个操作系统，这样底层的操作系统就叫做hypervisor，它来管理和分配上层操作系统所需要的资源。可以看到这样的虚拟化方案多么的无奈：为了实现资源和名字空间的控制和隔离而运行多个操作系统实体，这样的开销实在是有点大。</p>
+
+<p>根据维基的解释，这种虚拟化也分两种类型：</p>
+
+<ul>
+  <li>原生（native），直接将需要虚拟的OS运行在裸机上，如kvm，Xen。这些方案都需要特殊的<a href="http://www.linux-kvm.org/page/Processor_support">硬件支持</a>。</li>
+  <li>宿生（hosted），在软件层面虚拟化，如Virtualbox。</li>
+</ul>
+
+<p>和上面<a href="http://lwn.net/Articles/524952/">第一个链接</a>中提到的那样，hypervisor只是人们在OS实现真正操作系统层面虚拟化之前这个过渡时期所应用的方法而已，因为要让OS直接支持虚拟化还需要很多路要走，但是如果只是增加一些硬件支持就能使用虚拟化，那么这条路就会被当作临时的解决方案。最终在container实现之后这个技术终将成为历史（当然可能也不会消失，因为最近为了在linux上也能上12306.cn查票，我还在virtualbox里装了个Win。。这种需求不是container能解决的）。</p>
+
+<h3 id="container"><a href="http://en.wikipedia.org/wiki/Operating_system-level_virtualization">Container</a></h3>
+
+<p>Container的虚拟化开销与Hypervisor相比就要少很多，因为就只是运行了一个内核而已，但是它有个问题就是实现并没有成熟，可能并不适合在生产环境中使用。</p>
+
+<p>Container也称operating system level virtualization。也就是说它在操作系统层面实现了前面提到的虚拟化目标，由于内核已经有了很多这些资源控制的API，所以主要问题已经不是实现这些API，而是将这些API统一起来，形成一个统一的模型。可以看<a href="https://www.kernel.org/doc/ols/2007/ols2007v2-pages-45-58.pdf">这篇07年写的论文</a>来了解一些进展。</p>
+
+<p>内核中实现资源控制的是<a href="https://www.kernel.org/doc/Documentation/cgroups/cgroups.txt">cgroup</a>，而实现名字空间隔离的就是namespace，LWN上已经有<a href="http://lwn.net/Articles/531114/#series_index">一系列</a>的文章来介绍一些namespace相关的内核接口。</p>
+
+<h2 id="结论">结论</h2>
+
+<p>如果只是想要在云计算中使用虚拟化来最大化利用硬件资源，那么Container是未来最好的选择，但由于仍然不成熟所以目前不太可能广泛部署，所以Hypervisor在Container成熟之前仍然是唯一选择。不过不知道你们怎么样，反正我是不会花时间去学它了。而现在也是学习Container虚拟化的最好时期，因为最近大量相关patch进入mainline kernel。似乎要开始跟着patch学虚拟化了。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2013/03/%e4%b8%a4%e7%a7%8d%e5%9f%ba%e6%9c%ac%e7%9a%84gc%e6%96%b9%e6%b3%95%e5%92%8c%e4%bb%96%e4%bb%ac%e7%9a%84%e5%85%b3%e7%b3%bb/">两种基本的GC方法和他们的关系</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2013/06/%e8%bf%91%e4%b8%a4%e4%b8%aa%e6%9c%88%e6%80%bb%e7%bb%93/">近两个月总结</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2013/04/%e8%99%9a%e6%8b%9f%e5%8c%96%e7%9a%84%e4%b8%a4%e7%a7%8d%e6%96%b9%e6%a1%88/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2013/04/%e8%99%9a%e6%8b%9f%e5%8c%96%e7%9a%84%e4%b8%a4%e7%a7%8d%e6%96%b9%e6%a1%88/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

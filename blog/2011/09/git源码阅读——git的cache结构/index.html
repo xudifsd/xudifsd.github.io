@@ -1,0 +1,454 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Git源码阅读——git的cache结构 | Xudifsd</title>
+    <meta name="description" content="在git的源码中有这样一句#define cache_entry_size(len) ((offsetof(struct cache_entry,name)+(len)+8)\&amp;~7)开始我死活看不懂这什么意思，8这样的幻数已经够吓人的了，再来个对7取反码，实在看不懂。但是经过几天的研究终于明白这是什么意...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2011/09/git%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%e2%80%94%e2%80%94git%e7%9a%84cache%e7%bb%93%e6%9e%84/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>Git源码阅读——git的cache结构</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2011-09-26
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#git" title="Category: git" rel="category">git</a>&nbsp;
+    
+        <a href="/blog/category/#开发" title="Category: 开发" rel="category">开发</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#git" title="Tag: git" rel="tag">git</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>在git的<a href="https://github.com/git/git/blob/v1.0.0/cache.h#L105">源码</a>中有这样一句</p>
+
+<pre>#define cache_entry_size(len) ((offsetof(struct cache_entry,name)+(len)+8)\
+&amp;~7)</pre>
+
+<p>开始我死活看不懂这什么意思，8这样的幻数已经够吓人的了，再来个对7取反码，实在看不懂。但是经过几天的研究终于明白这是什么意思了。</p>
+
+<h2 id="背景">背景</h2>
+
+<p>前面的代码是描述cache的，cache在git中可以类比于CPU的高速缓存——为了加快访问速度，cache主要考虑的是工作目录和暂存对象(已经加到cache中但是并没有提交的对象)的差别，因此它只要将工作目录中的文件的stat信息保存即可。在新版的git中这样的概念改名叫做index了，所以现在所有的cache信息都存在.git/index文件中。保存信息的结构体原型如下：</p>
+
+<pre>struct cache_entry {
+	struct cache_time ce_ctime;
+	struct cache_time ce_mtime;
+	unsigned int ce_dev;
+	unsigned int ce_ino;
+	unsigned int ce_mode;
+	unsigned int ce_uid;
+	unsigned int ce_gid;
+	unsigned int ce_size;
+	unsigned char sha1[20];
+	unsigned short ce_flags;
+	char name[0];
+};</pre>
+
+<p>其中需要注意的是结构体的最后一个成员name，它用来存暂存对象的相对路径，是一个长度为0的数组，在gcc中使用这样的定义来让name的长度不定长，不用指针的原因就是git总是使用mmap(2)来读取index文件，之后直接将cache_entry指针指向正确的位置就行了，而且写到磁盘的时候也不需要再对文件名取指针内容，直接write(2)就行。而路径的长度信息就存在ce_flags中，但是它仅仅用低12位来存长度（这些已经足够存路径名了，因为在Linux系统中PATH_MAX == 4096 == 2<sup>12</sup>），其他位用做其他用途，这就是为什么程序源码中还有一句：</p>
+
+<pre>#define ce_namelen(ce) (CE_NAMEMASK &amp; ntohs((ce)-&gt;ce_flags))</pre>
+
+<p>这样一个宏函数可以求出ce指针的文件名长度。如果有一个cache_entry的指针ce，那么就可以通过cache_entry_size(ce_namelen(ce))来求得ce的实际大小。</p>
+
+<p>正由于cache是为了快速访问的，所以它的设计需要最大限度的考虑速度，这就是文章开头定义存在的原因：为了内存对齐——CPU访问对齐的变量更快，之所以必须要进行手工的对齐就是因为git是使用mmap(2)进行文件的读取。如果考虑到这一点那么最开始的代码也好解释了：对7取反码可以让结果能被8整除，但是如果一开始就不能被8整除那么结果就会小于另一个运算子，这样一来加8就是为了防止结果变小。但是这样怎么保证内存对齐的呢？因为在内存中所有cache元素都是存在数组中的，前一个元素的长度能被8整除，那么后一个元素的起始位置就能被8整除，而在mmap(2)时内核会选择一个对齐的地址放整个数组，这样一来数组中所有的元素都是对齐的了。</p>
+
+<p>读源码就像做侦探游戏一样，总是要猜作者到底要表达什么，而读好的代码更可以让人学到很多。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/09/git%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%e2%80%94%e2%80%94%e5%af%b9%e8%b1%a1%e6%95%b0%e6%8d%ae%e5%ba%93/">Git源码阅读——对象数据库</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2011/10/%e7%bc%93%e5%ad%98%e7%9a%84%e5%a8%81%e5%8a%9b/">缓存的威力</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2011/09/git%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%e2%80%94%e2%80%94git%e7%9a%84cache%e7%bb%93%e6%9e%84/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2011/09/git%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%e2%80%94%e2%80%94git%e7%9a%84cache%e7%bb%93%e6%9e%84/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

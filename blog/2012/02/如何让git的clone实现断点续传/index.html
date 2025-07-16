@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>如何让Git的clone实现断点续传 | Xudifsd</title>
+    <meta name="description" content="在下载大文件时最重要的功能恐怕就是断点续传了。如果在一个网络环境十分不稳定的环境下使用git克隆一个大型代码库绝对是个痛苦的经历，一旦下载中断，之前下载的内容全都不复存在。git提供断点续传的难处根据git的传输协议，在使用非HTTP进行传输时客户端和服务器端会进行一个复杂的通信：首先服务器端会列出它的所有内容，...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2012/02/%e5%a6%82%e4%bd%95%e8%ae%a9git%e7%9a%84clone%e5%ae%9e%e7%8e%b0%e6%96%ad%e7%82%b9%e7%bb%ad%e4%bc%a0/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>如何让Git的clone实现断点续传</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2012-02-10
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#git" title="Category: git" rel="category">git</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#git" title="Tag: git" rel="tag">git</a>&nbsp;
+    
+        <a href="/blog/tag/#技巧" title="Tag: 技巧" rel="tag">技巧</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>在下载大文件时最重要的功能恐怕就是断点续传了。如果在一个网络环境十分不稳定的环境下使用git克隆一个大型代码库绝对是个痛苦的经历，一旦下载中断，之前下载的内容全都不复存在。</p>
+
+<h2 id="git提供断点续传的难处">git提供断点续传的难处</h2>
+
+<p>根据git的<a href="http://book.git-scm.com/7_transfer_protocols.html">传输协议</a>，在使用非HTTP进行传输时客户端和服务器端会进行一个复杂的通信：首先服务器端会列出它的所有内容，然后客户端根据服务器端的提示找出自己需要哪些数据，再向服务器索取，之后服务器端再调用“git upload-pack”将客户端想要的commits进行打包并传输。整个过程比较复杂，而且传输协议也不像HTTP协议那么简单，并且最麻烦的就是git传输的不是静态文件而是动态生成的，这样就造成了git的传输很难修改成支持断点续传。</p>
+
+<h2 id="解决方法">解决方法</h2>
+
+<p>用HTTP来获取静态的文件时使用断点续传实在是再<a href="http://www.ibm.com/developerworks/cn/java/joy-down/">简单</a>不过的了，只要在HTTP头加一行RANGE属性即可。所以如果能将git的整个仓库转换成一个静态文件再使用普通的HTTP协议传输就能非常简单地实现断点续传了。</p>
+
+<p>git其实有<a href="http://book.git-scm.com/7_the_packfile.html">packfile</a>这样的文件格式，这种文件会在运行“git gc”时或进行传输时生成，生成之后的文件包括了整个git所管理的全部内容，但仅仅只靠这样一个文件还是不能解决问题，因为这种文件只包含仓库中所有对象的内容和SHA1值，除此之外没有任何仓库元信息（分支，tag等）。所以就算得到了packfile也不能重建一个仓库。</p>
+
+<p>但是git除了packfile外还有另外一种格式的文件：bundle，这种文件只是在packfile的基础上再包括刚刚提到的仓库的元信息，所以根据bundle文件我们可以完整地clone出一个仓库。</p>
+
+<p>不过这和断点续传有什么关系呢？因为bundle可以用来将整个仓库变成一个静态文件，所以如果在服务器上创建bundle再用普通的HTTP来得到这个文件，就可以重创整个仓库，这也是android仓库的<a href="http://code.google.com/p/git-repo/source/detail?r=f322b9abb4cadc67b991baf6ba1b9f2fbd5d7812&amp;name=stable">做法</a>。不过这个方法需要服务器端提供clone.bundle文件，一旦服务器提供不一样的文件名这样的方法就失效了。而且这样的方法需要用户对服务器有控制权，如果不能控制服务器这一切都是空谈。一般用户常常只是在github这样的网站托管仓库，或者想要克隆一个Linux内核代码，这样只要服务器端不提供bundle，就算用户知道有这个东西也不能利用它来进行断点续传。不过为何不让别人帮你创建bundle呢？最终的解决方案就是<a href="https://bundler.caurea.org/">这个</a>网站，它接受你提供的代码仓库的url，之后它会将你想要的仓库克隆并创建一个bundle文件，之后你只需从该服务器上下载静态的bundle文件即可。下载完整个bundle文件后根据<a href="http://progit.org/2010/03/10/bundles.html">这里</a>的举例就能得到整个仓库了，不过之后需要使用“git remote”修改一下远程仓库的地址，修改完后为了确保仓库内容最新最好还要执行一下“git pull”。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2012/01/%e7%a8%8b%e5%ba%8f%e7%9a%84%e9%80%80%e5%87%ba%e7%a0%81/">程序的退出码</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2012/02/%e9%9f%b3%e4%b9%90%e4%b8%ad%e8%b0%83%e5%8f%b7%e7%9a%84%e5%8c%ba%e5%88%ab/">音乐中调号的区别</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2012/02/%e5%a6%82%e4%bd%95%e8%ae%a9git%e7%9a%84clone%e5%ae%9e%e7%8e%b0%e6%96%ad%e7%82%b9%e7%bb%ad%e4%bc%a0/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2012/02/%e5%a6%82%e4%bd%95%e8%ae%a9git%e7%9a%84clone%e5%ae%9e%e7%8e%b0%e6%96%ad%e7%82%b9%e7%bb%ad%e4%bc%a0/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

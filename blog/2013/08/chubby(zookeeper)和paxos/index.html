@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>chubby（zookeeper）和paxos | Xudifsd</title>
+    <meta name="description" content="解决的问题先说为什么要有这两个东西。比如你开了个银行，里面有三个账户A，B和C。这时有两个人想转账，一个人想从A中转到B中，另一个人想从A中转到C中。但是A中的金额只够支持转一次，所以要不第一个人转账失败，要不第二个失败。如何实现？非常简单，只部署一个服务器接收所有请求，第一个收到的请求成功，第二个失败即可，但是...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2013/08/chubby(zookeeper)%e5%92%8cpaxos/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>chubby（zookeeper）和paxos</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2013-08-22
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#分布式" title="Category: 分布式" rel="category">分布式</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#zookeeper" title="Tag: zookeeper" rel="tag">zookeeper</a>&nbsp;
+    
+        <a href="/blog/tag/#分布式" title="Tag: 分布式" rel="tag">分布式</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <h2 id="解决的问题">解决的问题</h2>
+
+<p>先说为什么要有这两个东西。比如你开了个银行，里面有三个账户A，B和C。这时有两个人想转账，一个人想从A中转到B中，另一个人想从A中转到C中。但是A中的金额只够支持转一次，所以要不第一个人转账失败，要不第二个失败。</p>
+
+<p>如何实现？非常简单，只部署一个服务器接收所有请求，第一个收到的请求成功，第二个失败即可，但是这会产生单节点失败——假设这个服务器挂了，那么银行的所有业务都会挂掉。这样我们可以起两个服务器（或者多个服务器），指定一个为主服务器，其他服务器在主服务器挂掉后成为主服务器，如果只有两个服务器那么另一个就成为主服务器，但是如果有多个服务器如何选择主服务器呢？并且在两个服务器的情况下可能另一个没有挂掉，仍然能收到别人的请求，只是无法收到另一个服务器的请求了，这样就会造成有两个服务器都认为自己是主服务器（网络分区）。这样就可能会造成两个转账都成功。</p>
+
+<p>问题的核心就是<strong>多个</strong>服务器状态的一致性，状态的一致就需要服务器<strong>们</strong>达成共识，前面描述的问题可以靠两个共识来解决：</p>
+
+<ul>
+  <li>谁是主服务器</li>
+  <li>谁的转账应该成功</li>
+</ul>
+
+<p>如果系统能达成这两个共识的其中一个就能解决问题：</p>
+
+<p>如果能达成第一个共识，那么所有的转账操作都需要由主服务器做出判断，其他从服务器只需要跟随即可，同时为了解决前面的网络分区问题只需要做一个master lease即可（一群服务器选举出一个master，并且承诺不会在一定时间内的任何情况下选出其他master，这样如果出现网络分区，整个服务可能不可用，但是过了master lease期，集群就能选出另一个master，并重新提供服务。而原来的master因为没能成为新master而成为跟随者）。</p>
+
+<p>或者达成另一个共识“谁的转账应该成功”，这样就不要求谁来成为master来做决定：给两个转账分配序列号，这个序列号是单调递增的，并且对转账都是唯一，这个序列号就是需要所有服务器达成的共识。达成共识后服务器再按照序列号的顺序应用操作即可，这样所有服务器也能达到一致状态。</p>
+
+<p>总结起来就是：</p>
+
+<ul>
+  <li>为了解决单节点失败问题，需要多个服务器。</li>
+  <li>为了让多个服务器的状态一致，可以用前面提到的两种解决方法之一。</li>
+</ul>
+
+<p>前面的两个解决方法对应的就是<a href="https://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/zh-CN//archive/chubby-osdi06.pdf">chubby</a>和<a href="http://www.cs.utexas.edu/users/lorenzo/corsi/cs380d/past/03F/notes/paxos-simple.pdf">paxos</a>。开源的解决方案对应的就是<a href="https://zookeeper.apache.org/">zookeeper</a>和<a href="http://www.inf.usi.ch/faculty/pedone/MScThesis/marco.pdf">libpaxos</a>。</p>
+
+<p>chubby或者说zookeeper提供一个类似于文件系统的接口，让使用者能用类似于文件锁的方式选举出自己的master，而chubby本身为了维持高可用需要部署在至少3台服务器上（这样挂掉少于一半的服务器，整体还能工作），而且他们内部就是使用paxos算法产生内部共识的（zookeeper使用类似于paxos的算法Zab，详情见《<a href="http://book.douban.com/subject/3220004/">Hadoop权威指南</a>》）。</p>
+
+<p>这样看起来似乎使用libpaxos比较方便，因为都能解决问题，并且libpaxos不需要多余的服务器来运行chubby服务，只需要服务本身使用这个库就行。但是chubby论文就说道了为什么Google内部实现了chubby而不是实现一个库：</p>
+
+<ol>
+  <li>大部分开发人员在开始开发时都不会考虑到高可用性问题，所以一开始都只会运行在一台服务器上。只有当服务的用户增多以后，才开始认真对待这个问题。使用chubby可以在保持原有的程序架构的情况下，通过添加简单的语句就可以解决一致性问题。</li>
+  <li>有时候并不仅仅需要选出一个master，还需要让zookeeper托管一些信息，比如服务的配置信息以及master的地址等，但是zookeeper并不是专门用来做存储的，所以不要往zookeeper上写太多东西。</li>
+  <li>一个基于锁的接口更容易被开发者接受。因为并不是所有的开发者都了解分布式共识协议的，但大部分都用过锁。</li>
+  <li>一个分布式共识协议需要使用到好几台副本来保证高可用，而使用chubby，就算只有一个用户也能用。</li>
+</ol>
+
+<p>这样来说chubby这样的系统更加好用，因为Chubby不仅解决了一致性问题，还可以提供更多更有用的功能，像配置的管理。并且能用上zookeeper的公司都不是小公司，这样的公司有许多组件需要zookeeper这样的东西来维持高可用，而且zookeeper设计时就尽量减少使用者与它的交互，避免zookeeper成为瓶颈，所以可以很多服务同时使用一个zookeeper集群。</p>
+
+<h2 id="zookeeper和redis的不同">zookeeper和redis的不同</h2>
+
+<p>有时候很多人会觉得zookeeper很像redis，但是他们完全不是一个东西。</p>
+
+<p>首先，他们的配置就完全不一样，redis需要手动配置谁是master，谁是slaver，而且slaver主要用于加速读而已，并且要想让redis的master挂掉后让其中一个slaver当master还得自己写很多东西（貌似redis的sentinel在解决这个问题，具体没研究过）。但是这在zookeeper中完全不是问题，配置里甚至不会指定谁是master，由他们自己选举（注意，zookeeper中选举master和别的服务靠zookeeper选举master是两回事，zookeeper中选master主要是为了避免活锁，提高性能，详见paxos那篇论文）。</p>
+
+<p>第二个不同就是客户端连接zookeeper给的地址类似“zk1:2181,zk2:2181,zk3:2181”这样的逗号分割的IP、端口对，客户端自动连接到zookeeper中的master，并在zookeeper的master换了之后自动连接master，这和redis也完全不同。</p>
+
+<p>第三个不同就是zookeeper提供了大量的接口用于分布式机器间的同步。举例来说，在zookeeper中可以通过一个接口用文件来表示某个客户端，一旦zookeeper与客户端失去连接，zookeeper会自动把文件删除。并且zookeeper还提供了异步的API让客户端可以watch某个节点下文件的变动，这两个API结合起来就能用于让zookeeper通知客户端：他们中某个客户端已经挂掉。这样就不需要让这些客户端不断轮询zookeeper来获取信息。而redis要实现这个功能则需要服务器自己去查，很费流量的。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                        
+                        <h2 id="similar_posts">Similar Posts</h2>
+                        <ul>
+                        
+                        <li class="relatedPost">
+                            <a href="/blog/2016/06/chubby-zookeeper-different-consistency-level/">chubby & zookeeper: different consistency level
+                            
+                            </a>
+                        </li>
+                        
+                        
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+            
+        
+        
+            </ul>
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2013/07/%e4%b8%ba%e4%bb%80%e4%b9%88%e4%bd%a0%e7%9a%84%e5%85%ac%e5%8f%b8%e5%ba%94%e8%af%a5%e6%89%a7%e8%a1%8c%e5%bc%80%e6%94%be%e7%9a%84%e5%bc%80%e6%ba%90%e6%94%bf%e7%ad%96(%e7%bf%bb%e8%af%91)/">为什么你的公司应该执行开放的开源政策（翻译）</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2013/09/%e5%86%8d%e8%a7%81,%e5%8c%97%e4%ba%ac/">再见，北京</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2013/08/chubby(zookeeper)%e5%92%8cpaxos/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2013/08/chubby(zookeeper)%e5%92%8cpaxos/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#similar_posts">Similar Posts</a></li>
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

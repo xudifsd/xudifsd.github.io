@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>记一次Linux grub恢复 | Xudifsd</title>
+    <meta name="description" content="今天同学遇到了一个很多Linux使用者常见的问题：恢复grub。他的情况是这样的：硬盘上有两个操作系统，一个Windows 7，一个Ubuntu，由于Windows中毒（既然Windows容易坏为什么还要用。。），所以把Windows重装一遍，重装一遍后会发现在启动选项中没有Ubuntu了，这很正常，因为Wind...">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" post>
+    <div class="left">
+        <h1>记一次Linux grub恢复</h1>
+        <div class="label">
+
+            <div class="label-card">
+                <i class="fa fa-calendar"></i>2011-11-16
+            </div>
+
+            <div class="label-card">
+                <i class="fa fa-user"></i>xudifsd
+                
+            </div>
+
+            <div class="label-card">
+                
+            </div>
+
+            <div class="label-card">
+            
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Linux" title="Category: Linux" rel="category">Linux</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+            </div>
+
+            <div class="label-card">
+            
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#linux" title="Tag: linux" rel="tag">linux</a>&nbsp;
+    
+        <a href="/blog/tag/#技巧" title="Tag: 技巧" rel="tag">技巧</a>&nbsp;
+    
+        <a href="/blog/tag/#联想" title="Tag: 联想" rel="tag">联想</a>
+    
+  
+
+</span>
+
+            </div>
+
+        </div>
+        <hr>
+        <article itemscope itemtype="http://schema.org/BlogPosting">
+        <p>今天同学遇到了一个很多Linux使用者常见的问题：恢复grub。他的情况是这样的：硬盘上有两个操作系统，一个Windows 7，一个Ubuntu，由于Windows中毒（既然Windows容易坏为什么还要用。。），所以把Windows重装一遍，重装一遍后会发现在启动选项中没有Ubuntu了，这很正常，因为Windows的引导程序不能识别Ubuntu系统（这就是为什么Ubuntu要在Windows装后再装的原因），而重装系统会清掉原来的引导程序。为了能重新启动硬盘上的Ubuntu需要将Ubuntu的引导程序也就是grub装上。</p>
+
+<p>首先从Ubuntu安装盘启动，选择试用模式，启动好之后打开终端，输入以下命令：</p>
+
+<pre>sudo fdisk -l</pre>
+
+<p>它会列出当前硬盘的所有分区，如下图：<a href="/blog/statics/2011/11/Selection_006.png"><img class="aligncenter size-medium wp-image-80" title="fdisk -l" src="/blog/statics/2011/11/Selection_006-300x137.png" alt="fdisk -l结果" width="300" height="137" srcset="/blog/statics/2011/11/Selection_006-300x137.png 300w, /blog/statics/2011/11/Selection_006.png 638w" sizes="(max-width: 300px) 100vw, 300px" /></a></p>
+
+<p>我分了多个Linux分区，分别为/dev/sda{6..11}，其中sda9是我的根目录，sda6是我的/boot目录</p>
+
+<p>由于是从CD启动的，硬盘上的分区都还没有挂载，所以先要将需要修改的一些分区挂载上来，执行以下命令：</p>
+
+<pre>sudo mount /dev/sda9 /mnt
+sudo mount /dev/sda6 /mnt/boot</pre>
+
+<p>其中第二个命令需要根据自己的情况运行，由于我将boot单独分一个区，所以我需要挂载boot分区来修改它，如果你没给boot单独分区，那么就不用执行第二条命令。</p>
+
+<p>之后需要将一些虚拟的文件系统挂载到/mnt目录下，这样是为了模拟出从硬盘启动的所有文件系统的环境：</p>
+
+<pre>sudo mount --bind /proc /mnt/proc
+sudo mount --bind /dev /mnt/dev
+sudo mount --bind /sys /mnt/sys</pre>
+
+<p>之后便是一条非常重要的命令，如果你在进行grub-install时出现了<strong>/usr/sbin/grub-probe: error: cannot stat ‘aufs’</strong>提示，那么很有可能就是因为你没有执行下面这条命令：</p>
+
+<pre>sudo chroot /mnt</pre>
+
+<p>执行了这条命令之后你的终端已经几乎完全模拟出从硬盘启动的终端了，之后你执行的命令都对应的修改硬盘而不是修改不会保存的CD虚拟的文件系统了（对于一些特殊情况就不满足这条件了，比如需要修改/etc但是你将etc单独分区并且没有挂载到/mnt）。<br />
+之后执行以下命令：</p>
+
+<pre>update-grub
+grub-install /dev/sdX	#sdX中的X对于你硬盘的号，一般是sda，注意不是sda7这样的分区号，而是直接指定整个硬盘，如果不是主硬盘就是sdb，以此类推</pre>
+
+<p>之后直接重启就行了。</p>
+
+<h2 id="联想">联想</h2>
+
+<p>最近总是在思考过程式编程和纯函数式编程有什么区别，我觉得这是一个很好的例子。在这个还原grub的过程中我们做了很多的mount，并且还用到了几乎不会用到的chroot，这么多多余的步骤就是为了创造出一个正确的文件系统环境，好让我们在这个模拟的环境中执行没有参数的update-grub。从编程的角度来讲update-grub是个函数，但是这个函数写得非常不好，它竟然不靠参数来运行而是依赖于全局变量，这个全局变量就是我们刚刚费了很大劲才创造出来的文件系统环境，如果update-grub靠参数来运行（也就是说update-grub类似于纯函数式编程只靠参数运行而不依赖于全局变量），我们就只需要挂载boot分区再指定boot分区的位置就行，而不用为了这个依赖全局变量的函数而模拟出整个环境。我觉得这也算是函数式编程的一个好处之一了吧。</p>
+
+        </article>
+        <hr>
+
+        
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+            
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+                
+                    
+                
+                    
+                
+                    
+                
+            
+        
+        
+
+        <div class="post-recent">
+    <div class="pre">
+        
+        <p><strong>上一篇</strong> <a href="/blog/2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/">闭包，词法作用域和lambda函数</a></p>
+        
+    </div>
+    <div class="nex">
+
+        
+        <p><strong>下一篇</strong> <a href="/blog/2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/">学习lisp的总结以及scheme和common lisp的比较</a></p>
+        
+    </div>
+</div>
+
+
+        <h2 id="comments">Comments</h2>
+        
+<div id="disqus_thread"></div>
+<script>
+    /**
+     * RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     * LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+
+    var disqus_config = function() {
+        this.page.url = 'http://xudifsd.org/blog//2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/'; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = 'http://xudifsd.org/blog//2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/'; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+
+    (function() { // DON'T EDIT BELOW THIS LINE
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//xudifsd.disqus.com/embed.js';
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+
+
+    </div>
+    <div class="right">
+        <div class="wrap">
+
+            <!-- Content -->
+            <div class="side content">
+                <div>
+                    Content
+                </div>
+                <ul id="content-side" class="content-ul">
+                    
+                    <li><a href="#comments">Comments</a></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>

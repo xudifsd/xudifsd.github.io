@@ -1,0 +1,1466 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Xudifsd</title>
+    <meta name="description" content="Xudifsd's personal blog">
+
+    <link rel="stylesheet" href="https://cdn.bootcss.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="https://at.alicdn.com/t/font_8v3czwksspqlg14i.css">
+    <link rel="stylesheet" href="/blog/css/main.css">
+    <link rel="canonical" href="http://xudifsd.org/blog/page6/">
+    <link rel="alternate" type="application/rss+xml" title="Xudifsd" href="http://xudifsd.org/blog/feed.xml">
+
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/favicon/apple-touch-icon-57x57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/favicon/apple-touch-icon-114x114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/favicon/apple-touch-icon-72x72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/favicon/apple-touch-icon-144x144.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="60x60" href="/favicon/apple-touch-icon-60x60.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="120x120" href="/favicon/apple-touch-icon-120x120.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="76x76" href="/favicon/apple-touch-icon-76x76.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="152x152" href="/favicon/apple-touch-icon-152x152.png" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-196x196.png" sizes="196x196" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-96x96.png" sizes="96x96" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-32x32.png" sizes="32x32" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-16x16.png" sizes="16x16" />
+    <link rel="icon" type="image/png" href="/favicon/favicon-128.png" sizes="128x128" />
+    <meta name="application-name" content="xudifsd"/>
+    <meta name="msapplication-TileColor" content="#FFFFFF" />
+    <meta name="msapplication-TileImage" content="/favicon/mstile-144x144.png" />
+    <meta name="msapplication-square70x70logo" content="/favicon/mstile-70x70.png" />
+    <meta name="msapplication-square150x150logo" content="/favicon/mstile-150x150.png" />
+    <meta name="msapplication-wide310x150logo" content="/favicon/mstile-310x150.png" />
+    <meta name="msapplication-square310x310logo" content="/favicon/mstile-310x310.png" />
+
+
+</head>
+
+  <body>
+    <header id="top">
+    <div class="wrapper">
+        <a href="/blog/" class="brand">Xudifsd</a>
+        <small>Rational life</small>
+        <button id="headerMenu" class="menu"><i class="fa fa-bars"></i></button>
+        <nav id="headerNav">
+            <ul>
+                <li>
+                    
+                    <a href="/blog/">
+                    
+                        <i class="fa fa-home"></i>Home
+                    </a>
+                </li>
+
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/archive/">
+                        
+                            <i class="fa fa-archive"></i>Archives
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/category/">
+                        
+                            <i class="fa fa-th-list"></i>Categories
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/tag/">
+                        
+                            <i class="fa fa-tags"></i>Tags
+                        </a>
+                    </li>
+                    
+                
+                    
+                    <li>
+                        
+                        <a href="/blog/about/">
+                        
+                            <i class="fa fa-heart"></i>About
+                        </a>
+                    </li>
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+                    
+                
+            </ul>
+        </nav>
+    </div>
+</header>
+
+
+        <div class="page clearfix" index>
+    <div class="left">
+        <ul>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/12/sicp%e7%bb%83%e4%b9%a0%e9%a2%981-45%e2%80%94%e2%80%94%e6%b1%82n%e6%ac%a1%e6%96%b9%e6%a0%b9/">SICP练习题1.45——求n次方根</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-12-19
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>&nbsp;
+    
+        <a href="/blog/tag/#SICP" title="Tag: SICP" rel="tag">SICP</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    《SICP》第一章最后有个练习非常有意思：求n次方根。书的第一章几乎用了所有的篇幅来讲一些算法和抽象，并且在第一章第一节就说到了用牛顿迭代法来求一个数的平方根，在第一章最后一节的练习中要求一个数的n次方根。
+
+根据书上前面几节的说法，求x的平方根就是求函数y-&gt;x/y的不动点，而不动点的求法就相当简单了，随便猜一个数带入函数，如果结果不好再将结果带入函数，最终函数总会得到不动点。但是如果直接这样求平方根会有一个问题：函数并不收敛（假设最开始猜y，那么带入函数会得到x/y，将结果再带入函数又得到y），补救办法就是使用一个叫average damp的方法（实在找不到中文的翻译，直译过来...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/12/sicp%e7%bb%83%e4%b9%a0%e9%a2%981-45%e2%80%94%e2%80%94%e6%b1%82n%e6%ac%a1%e6%96%b9%e6%a0%b9/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/12/%e7%90%86%e6%80%a7%e5%92%8c%e5%bf%ab%e4%b9%90/">理性和快乐</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-12-11
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#读后感" title="Category: 读后感" rel="category">读后感</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#读后感" title="Tag: 读后感" rel="tag">读后感</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    
+  人不是可以机械化处理的机器，他的生命尊严来源于他的非理性的情感。——许知远
+
+
+以前我总是认为人区别于动物就是因为人的理性，正是因为理性人类的科技才会如此发达，人们才可以使用各种各样的人造物品，也正是因为理性人们的社会才有秩序，而不像动物群体一样需要靠暴力来进行统治。因此我也就想当然地觉得作为正常的人应该抵制自己的非理性，也就是抵制自己内心的“兽性”。因此我尽量让自己变成一个理性的人，理解所有的事情，根据这些了解再去决定，尽量避免无意义的谈话，只做自己认为有价值的事。这样的做法在很大程度上让我做事和学习变得非常有效率，但是随之而来的是不快乐。这是一件非常矛盾的事情——我可以让自己做...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/12/%e7%90%86%e6%80%a7%e5%92%8c%e5%bf%ab%e4%b9%90/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/12/scheme%e7%9a%84%e5%ae%8f/">scheme的宏</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-12-05
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    Paul的书把lisp的宏夸到了无以附加的地步，但是作为一本闲聊的书它并没有深入介绍lisp的宏，甚至连基本概念都没提到。这对于学习lisp的人非常有害——它会造成一种莫名的崇拜，并且这种崇拜还是对于未知的崇拜，读者根本没有理解任何东西。这样的崇拜让我在读第一本lisp书时就找宏看，结果在没有理解其他部分时就接触到宏，当时就看得一头雾水。而且一些强大的东西往往也会有很麻烦的副作用，宏也一样，但是Paul并没有把这些问题讲明白，其实在一些其他正经介绍lisp的书中都是非常小心地强调宏的危害——良好定义的宏会有非常强大的力量，但是一些垃圾宏会让整个程序变得难以理解并且混乱不堪。
+
+其实我看懂...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/12/scheme%e7%9a%84%e5%ae%8f/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/">学习lisp的总结以及scheme和common lisp的比较</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-11-24
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    似乎很少有人刚开始编程就使用lisp，一般常见编程入门语言主要是C，Java，python等非常流行的语言。许多学lisp的人应该都和我一样是半路迁移过来的，到现在为止我学lisp断断续续的有半年了，现在总结一下这半年来都做了什么，顺便帮助一些其他的想学lisp的人。我学lisp时看过的书见这个豆列。
+
+学习lisp的痛苦和好处
+
+一般从其他语言迁移到lisp会经历各种痛苦，因为它有太多的其他语言不具有的概念：闭包，词法作用域，高阶函数，宏，即使撇开这些不谈一般人也会受不了lisp那么多的括号。其实括号这个问题也并不严重，最开始我刚从python迁到C就有很大的不适应：C竟然要求每个表达...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/11/%e5%ad%a6%e4%b9%a0lisp%e7%9a%84%e6%80%bb%e7%bb%93%e4%bb%a5%e5%8f%8ascheme%e5%92%8ccommon-lisp%e7%9a%84%e6%af%94%e8%be%83/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/">记一次Linux grub恢复</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-11-16
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Linux" title="Category: Linux" rel="category">Linux</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#linux" title="Tag: linux" rel="tag">linux</a>&nbsp;
+    
+        <a href="/blog/tag/#技巧" title="Tag: 技巧" rel="tag">技巧</a>&nbsp;
+    
+        <a href="/blog/tag/#联想" title="Tag: 联想" rel="tag">联想</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    今天同学遇到了一个很多Linux使用者常见的问题：恢复grub。他的情况是这样的：硬盘上有两个操作系统，一个Windows 7，一个Ubuntu，由于Windows中毒（既然Windows容易坏为什么还要用。。），所以把Windows重装一遍，重装一遍后会发现在启动选项中没有Ubuntu了，这很正常，因为Windows的引导程序不能识别Ubuntu系统（这就是为什么Ubuntu要在Windows装后再装的原因），而重装系统会清掉原来的引导程序。为了能重新启动硬盘上的Ubuntu需要将Ubuntu的引导程序也就是grub装上。
+
+首先从Ubuntu安装盘启动，选择试用模式，启动好之后打开终...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/11/%e8%ae%b0%e4%b8%80%e6%ac%a1linux-grub%e6%81%a2%e5%a4%8d/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/">闭包，词法作用域和lambda函数</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-11-08
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#javascript" title="Tag: javascript" rel="tag">javascript</a>&nbsp;
+    
+        <a href="/blog/tag/#lambda" title="Tag: lambda" rel="tag">lambda</a>&nbsp;
+    
+        <a href="/blog/tag/#lisp" title="Tag: lisp" rel="tag">lisp</a>&nbsp;
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    在学习编程时最重要的是了解程序解析器或编辑器的运行过程，有很多解析器模型可以用于模拟这些过程，在学习支持lambda函数的语言时有一个非常好用的解析器模型——环境解析模型，这个模型在《SICP》中提到，这方法对于学习lambda解析很有效。几乎所有支持lambda函数的都可以使用这种方法来模拟解析器运行，目前我知道的支持lambda函数的语言有JavaScript， Lisp和Haskell。
+
+环境
+
+想要理解环境解析方法就必须先理解环境。环境就类似于存储键值对的通用仓库，所有对变量值的查找都是在环境中查找，而环境则是由更小的帧对象组成，如何理解呢？下图显示了几个由帧组成的环境
+
+
+
+...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/11/%e9%97%ad%e5%8c%85,%e8%af%8d%e6%b3%95%e4%bd%9c%e7%94%a8%e5%9f%9f%e5%92%8clambda%e5%87%bd%e6%95%b0/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/10/scheme%e5%ae%9e%e7%8e%b0%e5%87%bd%e6%95%b0%e7%9a%84memoization%e4%bb%a5%e5%8f%8a%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%ad%a6%e4%b9%a0lisp/">Scheme实现函数的Memoization以及为什么要学习Lisp</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-10-19
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>&nbsp;
+    
+        <a href="/blog/tag/#scheme" title="Tag: scheme" rel="tag">scheme</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    什么是Memoization
+
+似乎我已经在很多书上看到函数的Memoization了，《JavaScript语言精粹》提到过，《SICP》也提到过。然而《JavaScript语言精粹》里面提到的那个memoization没什么意思，因为它那个函数并不通用，但是《SICP》提到的就不一样了，它几乎做到了通用性。
+
+从维基上可以看到具体的定义，简单来说Memoization可以对重复并且计算量大的函数进行优化，并且该函数必须没有状态，也就是说无论调用该函数多少次函数值都一样。Memoization的做法就是将计算的值保存起来，并且在下次再调用同样参数时直接返回该值。
+
+Scheme的Mem...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/10/scheme%e5%ae%9e%e7%8e%b0%e5%87%bd%e6%95%b0%e7%9a%84memoization%e4%bb%a5%e5%8f%8a%e4%b8%ba%e4%bb%80%e4%b9%88%e8%a6%81%e5%ad%a6%e4%b9%a0lisp/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/10/ubuntu-11-10%e6%88%aa%e5%9b%be%e5%8f%8aubuntu%e5%8f%91%e5%b8%83%e8%a7%84%e5%be%8b/">Ubuntu 11.10截图及Ubuntu发布规律</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-10-15
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#Ubuntu" title="Category: Ubuntu" rel="category">Ubuntu</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#ubuntu" title="Tag: ubuntu" rel="tag">ubuntu</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    好吧，这是我第一次写软文，但是今天刚刚试用了ubuntu11.10，感觉非常好。这次ubuntu使用了全新的LightDM登录管理器，非常漂亮，而且如果将面板调为半透明非常有感！
+
+现在我算是明白Canonical公司发布ubuntu的规律了，众所周知Canonical每隔6个月发布一个ubuntu版本，但是并不是每一个都值得去升级的，每隔两年它都会发布一个LTS（长期支持）版本，这样的版本是绝对推荐升级的，从ubuntu发布的历史来看8.04和10.04都是划时代的，但是其他的非长期支持版本就并不是太引人注目了，主要由于每次非长期支持版本会引进很多新功能，界面的跨度比较大，像11.04...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/10/ubuntu-11-10%e6%88%aa%e5%9b%be%e5%8f%8aubuntu%e5%8f%91%e5%b8%83%e8%a7%84%e5%be%8b/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/10/git%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%e2%80%94%e2%80%94%e6%96%87%e4%bb%b6%e8%b7%af%e5%be%84/">Git源码阅读——文件路径</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-10-05
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#git" title="Category: git" rel="category">git</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#git" title="Tag: git" rel="tag">git</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    最开始在学习git用法的时候就听说了git不像其他版本管理软件（subversion）把版本信息分别放在各个子目录，而是将整个版本信息放在项目的根目录，当时就觉得这种实现似乎很有意思，但是却不知道如何实现这一点，因为每次运行git add等命令时都有可能在任意子目录。唯一能想到的方法就是绝对路径：所有版本的文件的路径都使用绝对路径来表示，但是这样一来将项目的目录进行移动或者分布式开发就有问题，而且使用od(1)来查看git的index文件也发现存的是相对路径而不是绝对路径。
+
+git的实现
+
+在源代码中就可以找到实现原理：几乎所有的git命令都会在启动时调用setup_git_direc...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/10/git%e6%ba%90%e7%a0%81%e9%98%85%e8%af%bb%e2%80%94%e2%80%94%e6%96%87%e4%bb%b6%e8%b7%af%e5%be%84/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+              <li>
+                <h2>
+                  <a class="post-link" href="/blog/2011/10/%e7%bc%93%e5%ad%98%e7%9a%84%e5%a8%81%e5%8a%9b/">缓存的威力</a>
+                </h2>
+                <div class="label">
+                    <div class="label-card">
+                        <i class="fa fa-calendar"></i>2011-10-02
+                    </div>
+                    <div class="label-card">
+                        <i class="fa fa-user"></i>xudifsd
+                        
+                    </div>
+                    <div class="label-card">
+                        
+                    </div>
+
+                    <div class="label-card">
+                    
+
+
+<!-- <span class="point">•</span> -->
+<span class="categories">
+  <i class="fa fa-th-list"></i>
+  
+    
+        <a href="/blog/category/#编程" title="Category: 编程" rel="category">编程</a>
+    
+  
+
+  <!-- <span class="point">•</span> -->
+</span>
+
+
+                    </div>
+
+                    <div class="label-card">
+                    
+<span class="pageTag">
+  <i class="fa fa-tags"></i>
+  
+    
+        <a href="/blog/tag/#programming" title="Tag: programming" rel="tag">programming</a>
+    
+  
+
+</span>
+
+                    </div>
+                </div>
+                <div class="excerpt">
+                    
+  “程序需要对非常难以计算的数值进行缓存，使用空间换取时间”
+
+
+相信大多数写过程序的都知道这一点，但是如果没有真正对比一下是不会留下深刻印象的。
+今天看《SICP》里提到斐波那契函数是树形的递归调用，突然想到计算斐波那契数可以非常好地显示缓存的威力，斐波那契数求法如下
+
+unsigned long long fib(unsigned int n){
+    if ( n &lt; 2 )
+        return n;
+    return fib(n-1) + fib(n-2);
+}
+
+这是一个递归的函数，对于参数为4的调用树见下图：
+
+
+  
+  
+  
+    斐波那契函...
+                </div>
+                <div class="read-all">
+                    <a  href="/blog/2011/10/%e7%bc%93%e5%ad%98%e7%9a%84%e5%a8%81%e5%8a%9b/"><i class="fa fa-newspaper-o"></i>Read All</a>
+                </div>
+                <hr>
+              </li>
+            
+        </ul>
+
+
+
+        <!-- Pagination links -->
+        <div class="pagination">
+          
+          <a href="/blog/" class="previous"><i class="fa fa-angle-double-left"></i></a>
+            <a href="/blog/page5" class="previous"><i class="fa fa-angle-left"></i></a>
+          
+          <span class="page_number ">6/7</span>
+          
+            <a href="/blog/page7" class="next"><i class="fa fa-angle-right"></i></a>
+            <a href="/blog/page7" class="next"><i class="fa fa-angle-double-right"></i></a>
+          
+        </div>
+    </div>
+    <div class="right">
+        <div class="wrap">
+            <div class="side">
+                <div>
+                    <i class="fa fa-pencil-square-o" aria-hidden="true"></i>
+                    Recent Posts
+                </div>
+                <ul class="content-ul" recent>
+                    
+                        <li><a href="/blog/2021/03/%E5%88%86%E6%9D%83%E7%9A%84%E9%87%8D%E8%A6%81%E6%80%A7/">分权的重要性</a></li>
+                    
+                        <li><a href="/blog/2020/05/Understanding-Central-Banks/">Understanding Central Banks</a></li>
+                    
+                        <li><a href="/blog/2016/10/%e4%b8%b9%e9%ba%a6/">丹麦</a></li>
+                    
+                        <li><a href="/blog/2016/08/lease-activating/">Lease Activating</a></li>
+                    
+                        <li><a href="/blog/2016/06/chubby-zookeeper-different-consistency-level/">chubby & zookeeper: different consistency level</a></li>
+                    
+                        <li><a href="/blog/2016/05/use-percentile-in-performance-stats/">Use percentile in performance stats</a></li>
+                    
+                        <li><a href="/blog/2016/02/%e5%8f%b0%e6%b9%be%e6%b8%b8%e8%ae%b0/">台湾游记</a></li>
+                    
+                        <li><a href="/blog/2015/12/2015%e5%b9%b4%e6%80%bb%e7%bb%93/">2015年总结</a></li>
+                    
+                        <li><a href="/blog/2015/12/note-on-justice/">note on Justice</a></li>
+                    
+                        <li><a href="/blog/2015/09/%e5%ad%90%e5%ba%8f%e5%88%97%e4%b8%ad%e7%9a%84%e6%bb%91%e5%8a%a8%e7%aa%97%e5%8f%a3/">子序列中的滑动窗口</a></li>
+                    
+                </ul>
+            </div>
+
+            <!-- Content -->
+            <div class="side ">
+                <div>
+                    <i class="fa fa-th-list"></i>
+                    Categories
+                </div>
+                <ul class="content-ul" cate>
+                    
+                    <li>
+                        <a href="/blog/category/#美国" class="categories-list-item" cate="美国">
+                            <span class="name">
+                                美国
+                            </span>
+                            <span class="badge">3</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#读后感" class="categories-list-item" cate="读后感">
+                            <span class="name">
+                                读后感
+                            </span>
+                            <span class="badge">5</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#git" class="categories-list-item" cate="git">
+                            <span class="name">
+                                git
+                            </span>
+                            <span class="badge">4</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#开发" class="categories-list-item" cate="开发">
+                            <span class="name">
+                                开发
+                            </span>
+                            <span class="badge">10</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#编程" class="categories-list-item" cate="编程">
+                            <span class="name">
+                                编程
+                            </span>
+                            <span class="badge">26</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#Ubuntu" class="categories-list-item" cate="Ubuntu">
+                            <span class="name">
+                                Ubuntu
+                            </span>
+                            <span class="badge">1</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#Linux" class="categories-list-item" cate="Linux">
+                            <span class="name">
+                                Linux
+                            </span>
+                            <span class="badge">8</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#音乐" class="categories-list-item" cate="音乐">
+                            <span class="name">
+                                音乐
+                            </span>
+                            <span class="badge">1</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#大杂烩" class="categories-list-item" cate="大杂烩">
+                            <span class="name">
+                                大杂烩
+                            </span>
+                            <span class="badge">8</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#未分类" class="categories-list-item" cate="未分类">
+                            <span class="name">
+                                未分类
+                            </span>
+                            <span class="badge">1</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#分布式" class="categories-list-item" cate="分布式">
+                            <span class="name">
+                                分布式
+                            </span>
+                            <span class="badge">9</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#生活" class="categories-list-item" cate="生活">
+                            <span class="name">
+                                生活
+                            </span>
+                            <span class="badge">11</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#clojure" class="categories-list-item" cate="clojure">
+                            <span class="name">
+                                clojure
+                            </span>
+                            <span class="badge">6</span>
+                        </a>
+                    </li>
+                    
+                    <li>
+                        <a href="/blog/category/#观后感" class="categories-list-item" cate="观后感">
+                            <span class="name">
+                                观后感
+                            </span>
+                            <span class="badge">1</span>
+                        </a>
+                    </li>
+                    
+                </ul>
+            </div>
+            <div class="side">
+                <div>
+                    <i class="fa fa-tags"></i>
+                    Tags
+                </div>
+                <div class="tags-cloud">
+                    
+                    
+                    
+                    
+
+                    
+
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#legislation" style="font-size: 9.5pt; color: #999;">legislation</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#usa" style="font-size: 9.5pt; color: #999;">usa</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#历史" style="font-size: 10pt; color: #888;">历史</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#政宪" style="font-size: 10.5pt; color: #888;">政宪</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#读后感" style="font-size: 10.5pt; color: #888;">读后感</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#git" style="font-size: 10.5pt; color: #888;">git</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#programming" style="font-size: 18pt; color: #000;">programming</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#ubuntu" style="font-size: 9pt; color: #999;">ubuntu</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#scheme" style="font-size: 11pt; color: #777;">scheme</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#javascript" style="font-size: 9pt; color: #999;">javascript</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#lambda" style="font-size: 9pt; color: #999;">lambda</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#lisp" style="font-size: 12pt; color: #666;">lisp</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#linux" style="font-size: 11.5pt; color: #666;">linux</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#技巧" style="font-size: 9.5pt; color: #999;">技巧</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#联想" style="font-size: 9pt; color: #999;">联想</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#SICP" style="font-size: 9pt; color: #999;">SICP</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#总结" style="font-size: 10.5pt; color: #888;">总结</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#乐理" style="font-size: 9pt; color: #999;">乐理</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#音乐" style="font-size: 9pt; color: #999;">音乐</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#主机" style="font-size: 9.5pt; color: #999;">主机</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#JS" style="font-size: 9pt; color: #999;">JS</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#宪法" style="font-size: 9pt; color: #999;">宪法</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#美国" style="font-size: 9pt; color: #999;">美国</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#随想" style="font-size: 9pt; color: #999;">随想</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#编程" style="font-size: 9pt; color: #999;">编程</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#kernel" style="font-size: 10pt; color: #888;">kernel</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#mm" style="font-size: 9pt; color: #999;">mm</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#algorithm" style="font-size: 9.5pt; color: #999;">algorithm</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#gc" style="font-size: 9pt; color: #999;">gc</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#virtualization" style="font-size: 9pt; color: #999;">virtualization</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#distributed-system" style="font-size: 12pt; color: #666;">distributed-system</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#paper" style="font-size: 9.5pt; color: #999;">paper</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#分布式" style="font-size: 9.5pt; color: #999;">分布式</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#open-source" style="font-size: 9.5pt; color: #999;">open-source</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#translation" style="font-size: 9pt; color: #999;">translation</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#开源" style="font-size: 9.5pt; color: #999;">开源</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#翻译" style="font-size: 9pt; color: #999;">翻译</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#zookeeper" style="font-size: 9.5pt; color: #999;">zookeeper</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#life" style="font-size: 13.5pt; color: #555;">life</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#zeromq" style="font-size: 9.5pt; color: #999;">zeromq</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#garbage-collection" style="font-size: 9pt; color: #999;">garbage-collection</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#optimization" style="font-size: 10.5pt; color: #888;">optimization</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#clojure" style="font-size: 11.5pt; color: #666;">clojure</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#gsoc" style="font-size: 10pt; color: #888;">gsoc</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#java" style="font-size: 9pt; color: #999;">java</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#typed-clojure" style="font-size: 9pt; color: #999;">typed-clojure</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#douban" style="font-size: 9pt; color: #999;">douban</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#logic" style="font-size: 9pt; color: #999;">logic</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#type-system" style="font-size: 9pt; color: #999;">type-system</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#macro" style="font-size: 9.5pt; color: #999;">macro</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#latency" style="font-size: 9.5pt; color: #999;">latency</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#system" style="font-size: 9pt; color: #999;">system</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#leetcode" style="font-size: 9pt; color: #999;">leetcode</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#justice" style="font-size: 9pt; color: #999;">justice</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#law" style="font-size: 9pt; color: #999;">law</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#travel" style="font-size: 9.5pt; color: #999;">travel</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#chubby" style="font-size: 9pt; color: #999;">chubby</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#consistency" style="font-size: 9pt; color: #999;">consistency</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#paxos" style="font-size: 9pt; color: #999;">paxos</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#金融" style="font-size: 9pt; color: #999;">金融</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#法治" style="font-size: 9pt; color: #999;">法治</a>
+                    
+                      
+                      
+                      
+                      
+                      
+                      <a href="/blog/tag/#三权分立" style="font-size: 9pt; color: #999;">三权分立</a>
+                    
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+    <footer class="site-footer">
+
+    <div class="wrapper">
+
+        <p class="description">
+            
+        </p>
+        <p class="contact">
+            Contact me at:     
+            <a href="https://twitter.com/xudifsd" title="Twitter"><i class="fa fa-twitter" aria-hidden="true"></i></a>     
+        </p>
+        <p class="power">
+            <span>
+                Site powered by <a href="https://jekyllrb.com/">Jekyll</a> & <a href="https://pages.github.com/">Github Pages</a>.
+            </span>
+            <span>
+                Theme designed by <a href="https://github.com/Gaohaoyang">HyG</a> with modification.
+            </span>
+        </p>
+    </div>
+</footer>
+
+    <div class="back-to-top">
+    <a href="#top" data-scroll>
+        <i class="fa fa-arrow-up" aria-hidden="true"></i>
+    </a>
+</div>
+
+    <script src="/blog/js/main.js" charset="utf-8"></script>
+    <script src="/blog/js/smooth-scroll.min.js" charset="utf-8"></script>
+
+    <script type="text/javascript">
+      smoothScroll.init({
+        speed: 500, // Integer. How fast to complete the scroll in milliseconds
+        easing: 'easeInOutCubic', // Easing pattern to use
+        offset: 20, // Integer. How far to offset the scrolling anchor location in pixels
+      });
+    </script>
+  </body>
+</html>
